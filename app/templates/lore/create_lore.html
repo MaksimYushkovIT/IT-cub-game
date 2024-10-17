@@ -1,0 +1,29 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Создать лор{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Создать лор</h1>
+        <form method="post">
+            <div class="form-group">
+                <label for="title">Заголовок</label>
+                <input type="text" name="title" id="title" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="text">Текст</label>
+                <textarea name="text" id="text" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="category">Категория</label>
+                <select name="category" id="category" class="form-control">
+                    <option value="правила">Правила</option>
+                    <option value="мир">Мир</option>
+                    <option value="факультеты">Факультеты</option>
+                    <option value="преподаватели">Преподаватели</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Создать лор</button>
+        </form>
+    </div>
+{% endblock %}

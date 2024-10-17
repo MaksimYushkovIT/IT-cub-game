@@ -1,0 +1,73 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Профиль учителя {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Профиль учителя</h1>
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <img src="{{ user.avatar if user.avatar else url_for('static', filename='img/default_avatar.png') }}" alt="Аватар" class="img-fluid rounded-circle mb-3">
+                </div>
+                <div class="col-md-8">
+                    <h2 class="card-title">{{ user.last_name }} {{ user.first_name }} {{ user.patronymic }}</h2>
+                    <p><strong>Статус:</strong> {{ user.status }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Дата рождения:</strong> {{ user.birthday.strftime('%d.%m.%Y') if user.birthday else 'Не указана' }}</p>
+                    <p><strong>Педагогический стаж:</strong> {{ user.pedstage if user.pedstage else 'Не указан' }}</p>
+                </div>
+            </div>
+            
+            <hr>
+
+            <h3>Преподаваемые дисциплины:</h3>
+            <ul>
+                {% for discipline in user.Teacher_subjects %}
+                    <li>{{ discipline.name }}</li>
+                {% else %}
+                    <li>Нет назначенных дисциплин</li>
+                {% endfor %}
+            </ul>
+
+            <h3>Биография:</h3>
+            <p>{{ user.bio if user.bio else 'Биография не указана' }}</p>
+
+            <h3>Контактная информация:</h3>
+            <p>{{ user.contact_info if user.contact_info else 'Контактная информация не указана' }}</p>
+
+            <h3>Социальные сети:</h3>
+            <p><strong>Telegram:</strong> 
+                {% if user.telegram_link %}
+                    <a href="{{ user.telegram_link }}">{{ user.telegram_link }}</a>
+                {% else %}
+                    Не указан
+                {% endif %}
+            </p>
+            <p><strong>Discord:</strong> 
+                {% if user.discord_link %}
+                    <a href="{{ user.discord_link }}">{{ user.discord_link }}</a>
+                {% else %}
+                    Не указан
+                {% endif %}
+            </p>
+
+            <h3>Ученики:</h3>
+            <ul>
+                {% for student in user.students %}
+                    <li><a href="{{ url_for('auth.view_profile', user_id=student.id) }}">{{ student.last_name }} {{ student.first_name }}</a></li>
+                {% else %}
+                    <li>Нет назначенных учеников</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% if current_user.id == user.id %}
+    <div class="mt-4">
+        <a href="{{ url_for('auth.edit_profile') }}" class="btn btn-primary">Редактировать профиль</a>
+        <a href="{{ url_for('post.new_post') }}" class="btn btn-success">Создать новый пост</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

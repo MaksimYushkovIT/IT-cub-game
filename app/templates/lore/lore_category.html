@@ -1,0 +1,32 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Лор по категории{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <h2>Категории</h2>
+                <ul>
+                    <li><a href="{{ url_for('lore.lore_category', category='правила') }}">Правила</a></li>
+                    <li><a href="{{ url_for('lore.lore_category', category='мир') }}">Мир</a></li>
+                    <li><a href="{{ url_for('lore.lore_category', category='факультеты') }}">Факультеты</a></li>
+                    <li><a href="{{ url_for('lore.lore_category', category='преподаватели') }}">Преподаватели</a></li>
+                </ul>
+            </div>
+            <div class="col-md-9">
+                <h2>Статьи по категории {{ category }}</h2>
+                <ul>
+                    {% for lore in lores %}
+                        <li>
+                            <h3>{{ lore.title }}</h3>
+                            <p>{{ lore.text }}</p>
+                            <p>Категория: {{ lore.category }}</p>
+                            <a href="{{ url_for('lore.lore_detail', lore_id=lore.id) }}">Подробнее</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

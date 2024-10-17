@@ -1,0 +1,54 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Лор{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <h2>Категории</h2>
+                <ul>
+                    <li><a href="{{ url_for('lore.lore_category', category='правила') }}">Правила</a></li>
+                    <li><a href="{{ url_for('lore.lore_category', category='мир') }}">Мир</a></li>
+                    <li><a href="{{ url_for('lore.lore_category', category='факультеты') }}">Факультеты</a></li>
+                    <li><a href="{{ url_for('lore.lore_category', category='преподаватели') }}">Преподаватели</a></li>
+                </ul>
+            </div>
+            <div class="col-md-9">
+                <h2>Статьи</h2>
+                <ul id="articles-list">
+                    {% for lore in lores %}
+                        <li>
+                            <h3>{{ lore.title }}</h3>
+                            <p>{{ lore.text }}</p>
+                            <p>Категория: {{ lore.category }}</p>
+                            <a href="{{ url_for('lore.lore_detail', lore_id=lore.id) }}">Подробнее</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% if current_user.is_teacher %}
+                <a href="{{ url_for('lore.create_lore') }}" class="btn btn-primary">Создать лор</a>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Скрипт для отображения статей по категории
+        $(document).ready(function() {
+            $('.category').click(function() {
+                var category = $(this).attr('href');
+                $.ajax({
+                    type: 'GET',
+                    url: '/api/lore/articles/' + category,
+                    success: function(data) {
+                        $('#articles-list').empty();
+                        $.each(data.articles, function(index, article) {
+                            $('#articles-list').append('<li><h3>' + article.title + '</h3><p>' + article.text + '</p><p>Категория: ' + article.category + '</p><a href="/lore/article/' + article.id + '">Подробнее</a></li>');
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

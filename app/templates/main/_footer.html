@@ -1,7 +1,29 @@
-<ul class="nav justify-content-center border-bottom pb-3 mb-3">
-  <li class="nav-item"><a href="#" class="nav-link px-2">Главная</a></li>
-  <li class="nav-item"><a href="#" class="nav-link px-2">Характеристики</a></li>
-  <li class="nav-item"><a href="#" class="nav-link px-2">Цены</a></li>
-  <li class="nav-item"><a href="#" class="nav-link px-2">Вопросы и ответы</a></li>
-  <li class="nav-item"><a href="#" class="nav-link px-2">О нас</a></li>
-</ul>
+<footer class="footer mt-auto py-2">
+  <div class="container-fluid">
+      <div class="row align-items-center">
+          <div class="col-auto">
+              <img src="{{ url_for('static', filename='img/catinhat.png') }}" alt="Cat in Hat" class="footer-image" id="catInHat">
+              <span id="clickCounter" style="display: none;">0</span>
+          </div>
+          <div class="col">
+              <hr class="footer-line">
+          </div>
+      </div>
+  </div>
+</footer>
+
+<script>
+let clickCount = 0;
+const catImage = document.getElementById('catInHat');
+const clickCounter = document.getElementById('clickCounter');
+
+catImage.addEventListener('click', function() {
+  clickCount++;
+  clickCounter.textContent = clickCount;
+  clickCounter.style.display = 'inline';
+  
+  if (clickCount === 300) {
+      window.open("{{ url_for('student.pashalka') }}", '_blank');
+  }
+});
+</script>

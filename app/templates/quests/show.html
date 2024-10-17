@@ -1,0 +1,13 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Квест {{ event.name }}{% endblock %}
+
+{% block content %}
+  <h1>{{ event.name }}</h1>
+  <p>{{ event.description }}</p>
+  <p>Дата начала: {{ event.start_date }}</p>
+  <p>Дата окончания: {{ event.end_date }}</p>
+  <p>Участники: {{ event.users | join(', ') }}</p>
+  <p><a href="{{ url_for('quests.edit', event_id=event.id) }}">Редактировать квест</a></p>
+  <p><a href="{{ url_for('quests.delete', event_id=event.id) }}">Удалить квест</a></p>
+{% endblock %}

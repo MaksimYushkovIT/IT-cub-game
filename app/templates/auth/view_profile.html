@@ -1,0 +1,26 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Профиль {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Профиль пользователя {{ user.username }}</h1>
+
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">{{ user.username }} ({{ user.position if user.position else 'Новичок' }})</h4>
+            <p class="card-text">
+                <strong>ФИО:</strong> {{ user.last_name }} {{ user.first_name }} {{ user.patronymic }}<br>
+                <strong>Группа:</strong> {{ user.groups[0].name if user.groups else 'Не указана' }}<br>
+                <strong>Уровень:</strong> {{ user.level }}<br>
+                <strong>Куб-коины:</strong> {{ user.cube_coins }}<br>
+                <strong>Опыт:</strong> {{ user.experience }} XP<br>
+                <strong>Статус:</strong> {{ user.status if user.status else 'Не установлен ' }}<br>
+                <strong>Telegram:</strong> {{ user.telegram_link }}<br>
+                <strong>Discord:</strong> {{ user.discord_link }}<br>
+            </p>
+            <a href="{{ url_for('auth.edit_profile') }}" class="btn btn-primary">Редактировать профиль</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

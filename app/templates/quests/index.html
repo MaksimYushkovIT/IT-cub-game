@@ -1,0 +1,122 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Квесты{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-12 text-end">
+            <a href="{{ url_for('quests.create') }}" class="btn btn-primary">Создать квест</a>
+        </div>
+    </div>
+    {% if events %}
+    {% for event in events %}
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 border-end">
+                    <h2 class="card-title">{{ event.name }}</h2>
+                    <p class="card-text">{{ event.description }}</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Дата начала:</strong> {{ event.start_date.strftime('%d.%m.%Y') }}</p>
+                            <p><strong>Дата окончания:</strong> {{ event.end_date.strftime('%d.%m.%Y') }}</p>
+                            <p><strong>Тип:</strong> {{ event.type }}</p>
+                            <p><strong>Важность:</strong> {{ event.importance }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Опыт:</strong> {{ event.experience }}</p>
+                            <p><strong>Награда:</strong> {{ event.money_reward }} куб-коинов</p>
+                            <p><strong>Очки участия:</strong> {{ event.participation_points }}</p>
+                            <p><strong>Очки победы:</strong> {{ event.victory_points }}</p>
+                        </div>
+                    </div>
+                    {% if current_user in event.users %}
+                        <form action="{{ url_for('quests.leave', event_id=event.id) }}" method="post">
+                            <button type="submit" class="btn btn-danger">Отменить участие</button>
+                        </form>
+                    {% else %}
+                        <form action="{{ url_for('quests.join', event_id=event.id) }}" method="post">
+                            <button type="submit" class="btn btn-primary">Участвовать</button>
+                        </form>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <h3>Ваш проект</h3>
+                    {% set user_project = event.get_user_project(current_user.id) %}
+                    {% if user_project %}
+                        <h4>{{ user_project.name }}</h4>
+                        <p>{{ user_project.description }}</p>
+                        <p><strong>Статус:</strong> {{ user_project.status }}</p>
+                        {% if user_project.grade %}
+                            <p><strong>Оценка:</strong> {{ user_project.grade }}</p>
+                        {% endif %}
+                        {% if user_project.feedback %}
+                            <p><strong>Отзыв:</strong> {{ user_project.feedback }}</p>
+                        {% endif %}
+                        
+                        {% set current_time = current_time %}
+                        
+                        <h5>Статус документов:</h5>
+                        <ul>
+                            <li>
+                                Паспорт проекта: 
+                                {% if not user_project.passport_link %}
+                                    {% if current_time > event.passport_deadline %}
+                                        <span class="text-danger font-weight-bold">НЕ ОТПРАВЛЕН (ДЕДЛАЙН ПРОШЕЛ)</span>
+                                    {% else %}
+                                        <span class="text-warning">Не отправлен</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-success">Отправлен</span>
+                                {% endif %}
+                            </li>
+                            <li>
+                                Материалы проекта: 
+                                {% if not user_project.materials_link %}
+                                    {% if current_time > event.materials_deadline %}
+                                        <span class="text-danger font-weight-bold">НЕ ОТПРАВЛЕНЫ (ДЕДЛАЙН ПРОШЕЛ)</span>
+                                    {% else %}
+                                        <span class="text-warning">Не отправлены</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-success">Отправлены</span>
+                                {% endif %}
+                            </li>
+                            <li>
+                                Презентация проекта: 
+                                {% if not user_project.presentation_link %}
+                                    {% if current_time > event.presentation_deadline %}
+                                        <span class="text-danger font-weight-bold">НЕ ОТПРАВЛЕНА (ДЕДЛАЙН ПРОШЕЛ)</span>
+                                    {% else %}
+                                        <span class="text-warning">Не отправлена</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-success">Отправлена</span>
+                                {% endif %}
+                            </li>
+                        </ul>
+                
+                        {% if not event.is_completed %}
+                            <a href="{{ url_for('quests.edit_project', project_id=user_project.id) }}" class="btn btn-primary">Работа над проектом</a>
+                        {% endif %}
+                    {% else %}
+                        <p>Вы не создали проект для этого мероприятия</p>
+                        <a href="{{ url_for('quests.create_project', event_id=event.id) }}" class="btn btn-secondary">Создать проект</a>
+                    {% endif %}
+                </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="alert alert-info" role="alert">
+        {% if current_user.is_teacher %}
+            <h4 class="alert-heading">Кажется, у тебя сегодня выходной!</h4>
+            <p>Отдохни, чтобы дальше снова дарить возможности. Но если ты полон энергии, можешь создать новый увлекательный квест для своих учеников!</p>
+        {% else %}
+            <h4 class="alert-heading">Тебе не скучно?</h4>
+            <p>Не пора ли в приключения? Скоро здесь появятся интересные квесты, которые помогут тебе развить свои навыки и получить новый опыт!</p>
+        {% endif %}
+    </div>
+{% endif %}
+</div>
+{% endblock %}

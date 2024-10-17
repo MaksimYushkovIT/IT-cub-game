@@ -1,0 +1,58 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Редактирование проекта{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Редактирование проекта: {{ project.name }}</h1>
+    
+    <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="name" class="form-label">Название проекта</label>
+            <input type="text" class="form-control" id="name" name="name" value="{{ project.name }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Описание проекта</label>
+            <textarea class="form-control" id="description" name="description" rows="3" required>{{ project.description }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="status" class="form-label">Статус проекта</label>
+            <select class="form-control" id="status" name="status">
+                <option value="в работе" {% if project.status == 'в работе' %}selected{% endif %}>В работе</option>
+                <option value="завершен" {% if project.status == 'завершен' %}selected{% endif %}>Завершен</option>
+                <option value="на проверке" {% if project.status == 'на проверке' %}selected{% endif %}>На проверке</option>
+            </select>
+        </div>
+
+        <h2>Ссылки на документы проекта</h2>
+
+        <div class="mb-3">
+            <label for="passport_link" class="form-label">Ссылка на паспорт проекта</label>
+            <input type="url" class="form-control" id="passport_link" name="passport_link" value="{{ project.passport_link }}">
+            {% if project.passport_link %}
+                <p>Текущая ссылка: <a href="{{ project.passport_link }}" target="_blank">Открыть</a></p>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="materials_link" class="form-label">Ссылка на материалы проекта</label>
+            <input type="url" class="form-control" id="materials_link" name="materials_link" value="{{ project.materials_link }}">
+            {% if project.materials_link %}
+                <p>Текущая ссылка: <a href="{{ project.materials_link }}" target="_blank">Открыть</a></p>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="presentation_link" class="form-label">Ссылка на презентацию проекта</label>
+            <input type="url" class="form-control" id="presentation_link" name="presentation_link" value="{{ project.presentation_link }}">
+            {% if project.presentation_link %}
+                <p>Текущая ссылка: <a href="{{ project.presentation_link }}" target="_blank">Открыть</a></p>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+    </form>
+</div>
+{% endblock %}

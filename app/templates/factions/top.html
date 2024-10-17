@@ -1,0 +1,16 @@
+{% extends 'factions/factions.html' %}
+
+{% block faction_content %}
+  <h1>Топ фракций по уровню</h1>
+  <ul>
+    {% for faction in factions %}
+      <li>{{ faction.name }} (Уровень: {{ faction.level }})</li>
+    {% endfor %}
+  </ul>
+  <h1>Топ 10 участников по уровню</h1>
+  <ul>
+    {% for member in top_members %}
+      <li>{{ member.name }} (Уровень: {{ member.level }})</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

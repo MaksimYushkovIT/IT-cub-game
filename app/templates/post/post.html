@@ -1,0 +1,257 @@
+{% extends 'main/base.html' %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <article class="blog-post">
+                <h1 class="blog-post-title mb-3">{{ post.title }}</h1>
+                <p class="blog-post-meta text-muted">
+                    {{ post.created_at.strftime('%d %B %Y') }} by 
+                    <a href="{{ url_for('auth.view_profile', user_id=post.author.id) }}">{{ post.author.username }}</a>
+                </p>
+                
+                {% if post.cover_image %}
+                <img src="{{ post.cover_image }}" alt="{{ post.title }}" class="img-fluid mb-4">
+                {% endif %}
+
+                <div class="blog-post-content">
+                    {{ post.content | safe }}
+                </div>
+
+                {% if post.event %}
+                <div class="event-details mt-4 p-3 bg-light rounded">
+                    <h4>Информация о событии</h4>
+                    <p><strong>Начало:</strong> {{ post.event.start_date.strftime('%d %B %Y, %H:%M') }}</p>
+                    <p><strong>Окончание:</strong> {{ post.event.end_date.strftime('%d %B %Y, %H:%M') }}</p>
+                    <h5>Награды:</h5>
+                    <ul>
+                        {% if post.event.experience %}
+                            <li>Опыт: {{ post.event.experience }} XP</li>
+                        {% endif %}
+                        {% if post.event.money_reward %}
+                            <li>Куб-коины: {{ post.event.money_reward }}</li>
+                        {% endif %}
+                        {% if post.event.participation_points %}
+                            <li>Очки участия: {{ post.event.participation_points }}</li>
+                        {% endif %}
+                        {% if post.event.victory_points %}
+                            <li>Очки победы: {{ post.event.victory_points }}</li>
+                        {% endif %}
+                    </ul>
+                    <p><strong>Важность:</strong> {{ post.event.importance }}</p>
+                </div>
+                {% endif %}
+
+                <div class="mt-4 mb-4">
+                    <form action="{{ url_for('post.like_post', post_id=post.id) }}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-primary">
+                            {% if post.is_liked_by(current_user) %}
+                                <i class="fas fa-heart"></i> Убрать лайк
+                            {% else %}
+                                <i class="far fa-heart"></i> Лайк
+                            {% endif %}
+                            <span class="badge bg-secondary">{{ post.likes }}</span>
+                        </button>
+                    </form>
+                    {% if current_user.is_authenticated and (current_user.id == post.author_id or current_user.is_admin or current_user.is_teacher) %}
+                    <a href="{{ url_for('post.edit_post', post_id=post.id) }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-edit"></i> Редактировать
+                    </a>
+                {% endif %}
+            
+                {% if current_user.is_authenticated and (current_user.is_admin or current_user.is_teacher) %}
+                    {% if post.moderation_status == 'pending' %}
+                        <form action="{{ url_for('post.approve_post', post_id=post.id) }}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check"></i> Одобрить
+                            </button>
+                        </form>
+                        <form action="{{ url_for('post.reject_post', post_id=post.id) }}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-times"></i> Отклонить
+                            </button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+
+                {% if post.event %}
+                    {% if current_user not in post.event.users %}
+                        <button type="button" class="btn btn-success" id="joinEventButton">
+                            <i class="fas fa-check"></i> Участвую
+                        </button>
+                    {% else %}
+                        <form action="{{ url_for('post.leave_post', post_id=post.id) }}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-times"></i> Отменить участие
+                            </button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+                    {% if current_user.id == post.author_id or current_user.is_admin %}
+                    <a href="{{ url_for('post.edit_post', post_id=post.id) }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-edit"></i> Редактировать
+                    </a>
+                    {% endif %}
+                </div>
+
+                {% if post.event %}
+                    <h5>Проекты:</h5>
+                    <ul>
+                        {% for project in post.event.projects %}
+                            <li>{{ project.name }} ({{ project.event.name }})</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                <div class="modal fade" id="joinEventModal" tabindex="-1" role="dialog" aria-labelledby="joinEventModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="joinEventModalLabel">Выберите наставника</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <form action="{{ url_for('post.join_post', post_id=post.id) }}" method="post">
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="teacher_id">Наставник:</label>
+                                        <select class="form-control" id="teacher_id" name="teacher_id" required>
+                                            {% for teacher in teachers %}
+                                                <option value="{{ teacher.id }}">{{ teacher.last_name }} {{ teacher.first_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                                    <button type="submit" class="btn btn-primary">Подтвердить участие</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="mt-4">Комментарии:</h4>
+                <ul class="list-unstyled">
+                    {% for comment in post.comments %}
+                        <li class="mb-4">
+                            <div class="d-flex">
+                                <!-- Существующий код комментария -->
+                                <div class="flex-grow-1 ml-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="mb-0"><strong>{{ comment.author.username }}</strong></h6>
+                                        <small class="text-muted">{{ comment.created_at.strftime('%d %B %Y, %H:%M') }}</small>
+                                    </div>
+                                    <p class="mb-0">{{ comment.text }}</p>
+                                    {% if current_user.is_teacher or current_user.is_admin %}
+                                        <form action="{{ url_for('post.delete_comment', comment_id=comment.id) }}" method="post" class="d-inline delete-comment-form">
+                                            <button type="submit" class="btn btn-danger btn-sm mt-2">Удалить комментарий</button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                <form action="{{ url_for('post.add_comment', post_id=post.id) }}" method="post">
+                    <div class="form-group">
+                        <label for="comment">Добавить комментарий:</label>
+                        <textarea class="form-control" id="comment" name="comment" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Добавить</button>
+                </form>
+            </article>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="joinEventModal" tabindex="-1" role="dialog" aria-labelledby="joinEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="joinEventModalLabel">Выберите наставника</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{{ url_for('post.join_post', post_id=post.id) }}" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="teacher_id">Наставник:</label>
+                        <select class="form-control" id="teacher_id" name="teacher_id" required>
+                            {% for teacher in teachers %}
+                                <option value="{{ teacher.id }}">{{ teacher.last_name }} {{ teacher.first_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Подтвердить участие</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $('#joinEventButton').click(function(e) {
+            e.preventDefault();
+            $('#joinEventModal').modal('show');
+        });
+    
+        $('#joinEventForm').submit(function(e) {
+            e.preventDefault();
+            var form = $(this);
+            var url = form.attr('action');
+            
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: form.serialize(),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                success: function(response) {
+                    $('#joinEventModal').modal('hide');
+                    if (response.status === 'success') {
+                        location.reload(); // Перезагрузка страницы для обновления статуса участия
+                    } else if (response.status === 'already_joined') {
+                        alert('Вы уже присоединились к этому событию!');
+                    } else {
+                        alert('Произошла ошибка при попытке присоединиться к событию.');
+                    }
+                },
+                error: function(error) {
+                    console.log('Error:', error);
+                    alert('Произошла ошибка при попытке присоединиться к событию.');
+                }
+            });
+        });
+    
+        // Добавляем обработчик для кнопки "Отмена"
+        $('.btn-secondary').click(function() {
+            $('#joinEventModal').modal('hide');
+        });
+    
+        // Добавляем обработчик для закрытия модального окна при клике на крестик
+        $('.close').click(function() {
+            $('#joinEventModal').modal('hide');
+        });
+    });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('.delete-comment-form').submit(function(e) {
+                e.preventDefault();
+                if (confirm('Вы уверены, что хотите удалить этот комментарий?')) {
+                    this.submit();
+                }
+            });
+        });
+        </script>
+{% endblock %}

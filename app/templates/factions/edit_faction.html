@@ -1,0 +1,32 @@
+{% extends 'factions/factions.html' %}
+
+{% block faction_content %}
+<form method="POST">
+  <label for="name">Название:</label>
+  <input type="text" id="name" name="name" value="{{ faction.name }}">
+  <br>
+  <label for="description">Описание:</label>
+  <input type="text" id="description" name="description" value="{{ faction.description }}">
+  <br>
+  <label for="leader">Лидер:</label>
+  <select id="leader" name="leader">
+    {% for teacher in teachers %}
+        <option value="{{ teacher.id }}" {% if teacher.id == faction.leader_id %}selected{% endif %}>{{ teacher.last_name }} {{ teacher.first_name }}</option>
+    {% endfor %}
+</select>
+  <br>
+  <label for="ranks">Ранги:</label>
+  <ul>
+    {% for rank in ranks | groupby('name') %}
+    <li>
+        {{ rank.grouper }}: <input type="checkbox" name="rank_{{ rank.list[0].id }}" value="show" {% if rank.list[0].id in faction.rank_ids %}checked{% endif %}> Показывать на главной странице
+    </li>
+{% endfor %}
+  </ul>
+  <br>
+  <label for="new_rank">Добавить новый ранг:</label>
+  <input type="text" id="new_rank" name="new_rank">
+  <br>
+  <input type="submit" value="Сохранить">
+</form>
+{% endblock %}

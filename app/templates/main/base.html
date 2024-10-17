@@ -4,17 +4,77 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{{url_for('static', filename='css/libs/bootstrap.min.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="{{url_for('static',filename='js/libs/bootstrap.min.js')}}"></script>
+    <script src="{{url_for('static',filename='js/app.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
     <title>{% block title %}{% endblock %}</title>
-    <style>{% block style %}{% endblock %}</style>
 </head>
 <body>
-<header class="header">{% include 'main/_header.html' %}</header>
-<div class="page">
-    <main class="content">{% block content %}{% endblock %}</main>
-    <footer class="py-3 my-4">{% include 'main/_footer.html' %}</footer>
+    <header class="header">{% include 'main/_header.html' %}</header>
+    <div id="notification-modal" class="modal">
+        <div id="itemNotification" class="item-notification" style="display: none;">
+            <h3>Вы получили предмет!</h3>
+            <p>Название: <span id="itemName"></span></p>
+            <p>Описание: <span id="itemDescription"></span></p>
+            <button id="acceptButton">Принять</button>
+            <button id="inventoryButton">Зайти в инвентарь</button>
+        </div>
+    </div>
+    <main class="content">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="footer">{% include 'main/_footer.html' %}</footer>
 
-</div>
-<script src="{{url_for('static',filename='js/libs/bootstrap.min.js')}}"></script>
-<script src="{{url_for('static',filename='js/app.js')}}"></script>
+    <script>
+        $(document).ready(function() {
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        var type = "{{ category }}";
+                        switch(type){
+                            case 'info':
+                                toastr.info("{{ message }}");
+                                break;
+                            case 'success':
+                                toastr.success("{{ message }}");
+                                break;
+                            case 'warning':
+                                toastr.warning("{{ message }}");
+                                break;
+                            case 'error':
+                                toastr.error ("{{ message }}");
+                                break;
+                            default:
+                                toastr.info("{{ message }}");
+                        }
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        });
+    </script>
 </body>
 </html>

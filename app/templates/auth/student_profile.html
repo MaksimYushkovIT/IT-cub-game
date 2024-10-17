@@ -1,0 +1,114 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Профиль ученика {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Профиль ученика</h1>
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <img src="{{ user.avatar if user.avatar else url_for('static', filename='img/default_avatar.png') }}" alt="Аватар" class="img-fluid rounded-circle mb-3">
+                </div>
+                <div class="col-md-8">
+                    <h2 class="card-title">{{ user.last_name }} {{ user.first_name }} {{ user.patronymic }}</h2>
+                    <p><strong>Никнейм:</strong> {{ user.username }}</p>
+                    <p><strong>Статус:</strong> {{ user.status }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Дата рождения:</strong> {{ user.birthday.strftime('%d.%m.%Y') if user.birthday else 'Не указана' }}</p>
+                    <p><strong>Дата регистрации:</strong> {{ user.registered_at.strftime('%d.%m.%Y') }}</p>
+                </div>
+            </div>
+            
+            <hr>
+
+            <h3>Информация об обучении:</h3>
+            <p><strong>Уровень:</strong> {{ user.level }}</p>
+            <p><strong>Опыт:</strong> {{ user.experience }} XP</p>
+            <p><strong>Куб-коины:</strong> {{ user.cube_coins }}</p>
+            <div class="progress mb-3">
+                {% set exp_percentage = ((user.experience|int % 100) if user.experience is not none else 0) %}
+                <div class="progress-bar" role="progressbar" 
+                        aria-valuenow="{{ exp_percentage }}" 
+                        aria-valuemin="0" 
+                        aria-valuemax="100">
+                    {% if exp_percentage > 0 %}
+                        {{ exp_percentage }}%
+                    {% else %}
+                        Нет опыта
+                    {% endif %}
+                </div>
+            </div>
+            <p><small>Прогресс до следующего уровня: {{ exp_percentage }}%</small></p>
+
+            <h3>Группа:</h3>
+            <p>{{ user.groups[0].name if user.groups else 'Не назначена' }}</p>
+
+            <h3>Дисциплины:</h3>
+            <ul>
+                {% for discipline in user.disciplines %}
+                    <li>{{ discipline.name }}</li>
+                {% else %}
+                    <li>Нет назначенных дисциплин</li>
+                {% endfor %}
+            </ul>
+
+            <h3>Учитель:</h3>
+            <p>
+                {% if user.teacher %}
+                    <a href="{{ url_for('auth.view_profile', user_id=user.teacher.id) }}">
+                        {{ user.teacher.last_name }} {{ user.teacher.first_name }} {{ user.teacher.patronymic }}
+                    </a>
+                {% else %}
+                    Не назначен
+                {% endif %}
+            </p>
+
+            <h3>Достижения:</h3>
+            <ul>
+                {% for achievement in user.achievements %}
+                    <li>{{ achievement.name }} - {{ achievement.description }}</li>
+                {% else %}
+                    <li>Нет достижений</li>
+                {% endfor %}
+            </ul>
+
+            <h3>Фракция:</h3>
+            <p>
+                {% if user.factions %}
+                    {% for faction in user.factions %}
+                        <a href="{{ url_for('faction.faction', faction_id=faction.id) }}">{{ faction.name }}</a>
+                        {% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                {% else %}
+                    Не состоит в фракции
+                 {% endif %}
+            </p>
+
+            <h3>События:</h3>
+            <ul>
+                {% for event in completed_events %}
+                    <li>{{ event.name }} - {{ event.description }}</li>
+                {% else %}
+                    <li>Нет событий</li>
+                {% endfor %}
+            </ul>
+
+            <h3>Текущие события:</h3>
+            <ul>
+                {% for event in ongoing_events %}
+                    <li>{{ event.name }} - {{ event.description }}</li>
+                {% else %}
+                    <li>Нет текущих событий</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% if current_user.id == user.id %}
+    <div class="mt-4">
+        <a href="{{ url_for('auth.edit_profile') }}" class="btn btn-primary">Редактировать профиль</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

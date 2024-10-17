@@ -1,0 +1,31 @@
+{% extends 'factions/factions.html' %}
+
+{% block faction_content %}
+  <h1>{{ faction.name }}</h1>
+  <p>{{ faction.description }}</p>
+  <p>Уровень: {{ faction.level }}</p>
+  <p>Опыт: {{ faction.experience }}</p>
+  <div class="progress">
+    <div class="progress-bar" role="progressbar" aria-valuenow="{{ faction.experience }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ faction.experience }}%">
+      {{ faction.experience }}%
+    </div>
+  </div>
+  <p>Лидер: {{ leader.name }}</p>
+  {% if hands %}
+    <p>Руки:</p>
+    <ul>
+      {% for hand in hands %}
+        <li>{{ hand.name }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  <p>Топ 10 участников:</p>
+  <ul>
+    {% for member in members %}
+      <li>{{ member.name }} (Уровень: {{ member.level }})</li>
+    {% endfor %}
+  </ul>
+  {% if current_user.is_admin or current_user.name == leader.name %}
+  <a href="{{ url_for('faction.edit_faction', faction_id=faction.id) }}" class="btn btn-primary">Редактировать фракцию</a>
+  {% endif %}
+{% endblock %}

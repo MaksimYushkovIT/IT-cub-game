@@ -1,0 +1,102 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Магазин{% endblock %}
+
+{% block content %}
+<h1>Магазин</h1>
+<p>У вас <span id="user-cube-coins">{{ current_user.cube_coins }}</span> куб-коинов</p>
+<div class="row">
+    {% for item in items %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <img src="{{ item.image }}" class="card-img-top" alt="{{ item.name }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ item.name }}</h5>
+                <p class="card-text">{{ item.description }}</p>
+                <p class="card-text">Цена: {{ item.price }} куб-коинов</p>
+                {% if user_items[item.id] > 0 %}
+                <p>У вас {{ user_items[item.id] }} шт.</p>
+                {% endif %}
+                <button class="btn btn-primary buy-item" data-item-id="{{ item.id }}" data-item-name="{{ item.name }}" data-item-price="{{ item.price }}">
+                    {% if user_items[item.id] > 0 %}Докупить{% else %}Купить{% endif %}
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="confirmModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Подтверждение покупки</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Вы точно хотите купить <span id="itemName"></span>? Это действие необратимо.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss=" modal">Отмена</button>
+        <button type="button" class="btn btn-primary" id="confirmBuy">Купить</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+    $(document).ready(function() {
+        var itemId;
+        $(document).ready(function() {
+            $('.buy-item').click(function() {
+                var itemId = $(this).data('item-id');
+                
+                $.ajax({
+                    type: 'POST',
+                    url: '/buy_item/' + itemId,
+                    success: function(data) {
+                        if (data.success) {
+                            $('#user-cube-coins').text(data.cube_coins);
+                            alert(data.message);
+                            
+                            if (data.new_item) {
+                                showItemNotification(data.new_item.name, data.new_item.description);
+                            }
+                        } else {
+                            alert(data.message);
+                        }
+                    },
+                    error: function() {
+                        alert('Произошла ошибка при покупке товара.');
+                    }
+                });
+            });
+        });
+        
+        $('#confirmBuy').click(function() {
+            $.ajax({
+                type: 'POST',
+                url: '/buy_item/' + itemId,
+                success: function(data) {
+                    if (data.success) {
+                        $('#user-cube-coins').text(data.cube_coins);
+                        $('#confirmModal').modal('hide');
+                        alert('Товар куплен успешно!');
+                    } else {
+                        alert(data.message);
+                    }
+                },
+                error: function() {
+                    alert('Произошла ошибка при покупке товара.');
+                }
+            });
+        });
+
+        // Добавьте обработчик для кнопки "Отмена"
+        $('.close, .btn-secondary').click(function() {
+            $('#confirmModal').modal('hide');
+        });
+    });
+</script>
+{% endblock %}

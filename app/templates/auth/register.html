@@ -1,10 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'main/base.html' %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Регистрация</h1>
+    <form method="POST">
+        <div class="mb-3">
+            <label for="username" class="form-label">Никнейм</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+        </div>
+        <div class="mb-3">
+            <label for="last_name" class="form-label">Фамилия</label>
+            <input type="text" class="form-control" id="last_name" name="last_name" required>
+        </div>
+        <div class="mb-3">
+            <label for="first_name" class="form-label">Имя</label>
+            <input type="text" class="form-control" id="first_name" name="first_name" required>
+        </div>
+        <div class="mb-3">
+            <label for="patronymic" class="form-label">Отчество</label>
+            <input type="text" class="form-control" id="patronymic" name="patronymic">
+        </div>
+        <div class="mb-3">
+            <label for="group" class="form-label">Группа</label>
+            <select class="form-select" id="group" name="group" required>
+                <option value="ВИАР">ВИАР</option>
+                <option value="Прототипирование">Прототипирование</option>
+                <option value="Python">Python</option>
+                <option value="Робототехника">Робототехника</option>
+                <option value="Промышленная робототехника">Промышленная робототехника</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="teacher_id" class="form-label">Выберите педагога</label>
+            <select class="form-select" id="teacher_id" name="teacher_id" required>
+                <option value="">Выберите педагога</option>
+                {% for teacher in teachers %}
+                    <option value="{{ teacher.id }}">{{ teacher.last_name }} {{ teacher.first_name }} {{ teacher.patronymic }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Пароль</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <div class="mb-3">
+            <label for="confirm_password" class="form-label">Подтверждение пароля</label>
+            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+    </form>
+</div>
+{% endblock %}

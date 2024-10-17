@@ -1,0 +1,14 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Создать дисциплину{% endblock %}
+
+{% block content %}
+    <h1>Создать дисциплину</h1>
+    <form action="" method="post">
+        <label for="name">Название дисциплины:</label>
+        <input type="text" id="name" name="name" required>
+        <label for="description">Описание дисциплины:</label>
+        <textarea id="description" name="description" required></textarea>
+        <button type="submit" class="btn btn-primary">Создать</button>
+    </form>
+{% endblock %}

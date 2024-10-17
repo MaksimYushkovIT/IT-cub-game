@@ -1,0 +1,22 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Выбор дисциплины{% endblock %}
+
+{% block content %}
+    <h1>Выбор дисциплины</h1>
+    <ul>
+        {% for discipline in disciplines %}
+            <li>
+                <a href="{{ url_for('student.students_by_discipline', discipline_id=discipline.id) }}">{{ discipline.name }}</a>
+                <ul>
+                    {% for teacher in discipline.teachers %}
+                        <li>{{ teacher.last_name }} {{ teacher.first_name }} {{ teacher.patronymic }}</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+    {% if current_user.is_teacher or current_user.is_admin %}
+    <a href="{{ url_for('disciplines.create_discipline') }}" class="btn btn-primary">Создать дисциплину</a>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Создать квест{% endblock %}
+
+{% block content %}
+  <h1>Создать квест</h1>
+  <form action="" method="post">
+    <label for="name">Название квеста:</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="description">Описание квеста:</label>
+    <textarea id="description" name="description" required></textarea>
+
+    <label for="start_date">Дата начала:</label>
+    <input type="date" id="start_date" name="start_date" required>
+
+    <label for="end_date">Дата окончания:</label>
+    <input type="date" id="end_date" name="end_date" required>
+
+    <label for="cover_image">Изображение:</label>
+    <input type="url" id="cover_image" name="cover_image">
+
+    <label for="experience_points">Очки опыта:</label>
+    <input type="number" id="experience_points" name="experience_points">
+
+    <label for="money_reward">Награда:</label>
+    <input type="number" id="money_reward" name="money_reward">
+
+    <label for="importance">Важность:</label>
+    <select name="importance" required>
+      <option value="низкая">Низкая</option>
+      <option value="средняя">Средняя</option>
+      <option value="высокая">Высокая</option>
+    </select>
+    <select name="type" required>
+      <option value="мероприятие">Мероприятие</option>
+      <option value="квест">Квест</option>
+      <option value="конкурс">Конкурс</option>
+  </select>
+
+    <button type="submit" class="btn btn-primary">Создать квест</button>
+</form>
+{% endblock %}

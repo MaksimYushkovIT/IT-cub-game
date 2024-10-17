@@ -1,0 +1,22 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Редактировать квест {{ event.name }}{% endblock %}
+
+{% block content %}
+  <h1>Редактировать квест {{ event.name }}</h1>
+  <form action="" method="post">
+    <label for="name">Название квеста:</label>
+    <input type="text" id="name" name="name" value="{{ event.name }}" required>
+    <br>
+    <label for="description">Описание квеста:</label>
+    <textarea id="description" name="description" required>{{ event.description }}</textarea>
+    <br>
+    <label for="start_date">Дата начала:</label>
+    <input type="date" id="start_date" name="start_date" value="{{ event.start_date }}" required>
+    <br>
+    <label for="end_date">Дата окончания:</label>
+    <input type="date" id="end_date" name="end_date" value="{{ event.end_date }}" required>
+    <br>
+    <input type="submit" value="Сохранить изменения">
+  </form>
+{% endblock %}

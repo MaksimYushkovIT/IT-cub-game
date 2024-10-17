@@ -1,0 +1,38 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Фракции{% endblock %}
+
+{% block content %}
+    <header>
+        <h1>Фракции</h1>
+    </header>
+
+    <main>
+        <section id="faction-list">
+            <h2>Список фракций</h2>
+            <ul>
+                {% for faction in factions %}
+                    <li>
+                        <h3>{{ faction.name }}</h3>
+                        <p><strong>Количество участников:</strong> {{ faction.member_count }}</p>
+                        <p><strong>Очки фракции:</strong> {{ faction.points }}</p>
+                        <p><strong>Лидер фракции:</strong> {{ faction.leader }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section id="faction-stats">
+            <h2>Статистика фракции</h2>
+            <p><strong>Название вашей фракции:</strong> {{ user.faction }}</p>
+            <p><strong>Количество участников:</strong> {{ user_faction.member_count }}</p>
+            <p><strong>Очки фракции:</strong> {{ user_faction.points }}</p>
+            <p><strong>Ваши очки в фракции:</strong> {{ user.points }}</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 CubeGameBot. Все права защищены.</p>
+    </footer>
+<script src="scripts/news.js"></script>
+{% endblock %}

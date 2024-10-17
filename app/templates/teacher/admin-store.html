@@ -1,0 +1,60 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Админка Магазина{% endblock %}
+
+{% block content %}
+    <header>
+        <h1>Управление Магазином куб-коинов</h1>
+    </header>
+
+    <main>
+        <section id="add-product">
+            <h2>Добавить новый товар</h2>
+            <form action="/admin/store/add" method="POST">
+                <label for="name">Название товара:</label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="description">Описание товара:</label>
+                <textarea id="description" name="description" required></textarea>
+
+                <label for="price">Цена в куб-коинах:</label>
+                <input type="number" id="price" name="price" min="1" required>
+
+                <label for="responsible_person">Ответственный за товар:</label>
+                <input type="text" id="responsible_person" name="responsible_person" required>
+
+                <button type="submit">Добавить товар</button>
+            </form>
+        </section>
+
+        <section id="edit-products">
+            <h2>Редактировать товары</h2>
+            <ul>
+                {% for item in store_items %}
+                    <li>
+                        <h3>{{ item.name }}</h3>
+                        <p><strong>Описание:</strong> {{ item.description }}</p>
+                        <p><strong>Цена:</strong> {{ item.price }} куб-коинов</p>
+                        <p><strong>Ответственный:</strong> {{ item.responsible_person }}</p>
+
+                        <form action="/admin/store/edit/{{ item.id }}" method="POST">
+                            <input type="text" name="name" value="{{ item.name }}" required>
+                            <textarea name="description" required>{{ item.description }}</textarea>
+                            <input type="number" name="price" value="{{ item.price }}" min="1" required>
+                            <input type="text" name="responsible_person" value="{{ item.responsible_person }}" required>
+                            <button type="submit">Сохранить изменения</button>
+                        </form>
+
+                        <form action="/admin/store/delete/{{ item.id }}" method="POST" style="margin-top: 10px;">
+                            <button type="submit" onclick="return confirm('Вы уверены, что хотите удалить этот товар?');">Удалить товар</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 CubeGameBot. Все права защищены.</p>
+    </footer>
+{% endblock %}

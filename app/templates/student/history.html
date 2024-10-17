@@ -1,0 +1,35 @@
+{% extends 'main/base.html' %}
+
+{% block title %}История операций{% endblock %}
+
+{% block content %}
+    <header>
+        <h1>История операций</h1>
+    </header>
+
+    <main>
+        <section id="history-list">
+            <h2>Ваши последние операции</h2>
+            <ul>
+                {% if transactions %}
+                    {% for transaction in transactions %}
+                        <li>
+                            <p><strong>Дата:</strong> {{ transaction.date }}</p>
+                            <p><strong>Описание:</strong> {{ transaction.description }}</p>
+                            <p><strong>Количество очков:</strong> {{ transaction.points }}</p>
+                            <p><strong>Тип операции:</strong> 
+                                {% if transaction.type == 'add' %}Начисление{% else %}Списание{% endif %}
+                            </p>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <li>У вас пока нет операций.</li>
+                {% endif %}
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 CubeGameBot. Все права защищены.</p>
+    </footer>
+{% endblock %}

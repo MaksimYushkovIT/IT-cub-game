@@ -1,0 +1,38 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Профиль пользователя{% endblock %}
+
+{% block content %}
+    <header>
+        <h1>Профиль пользователя</h1>
+    </header>
+
+    <main>
+        <section id="profile-info">
+            <h2>Информация о пользователе</h2>
+            <p><strong>Имя:</strong> {{ user.first_name }}</p>
+            <p><strong>Фамилия:</strong> {{ user.last_name }}</p>
+            <p><strong>Фракция:</strong> {{ user.faction }}</p>
+            <p><strong>Количество очков:</strong> {{ user.points }}</p>
+        </section>
+
+        <section id="faction-stats">
+            <h2>Статистика фракции</h2>
+            <p><strong>Название фракции:</strong> {{ user.faction }}</p>
+            <p><strong>Количество участников:</strong> {{ faction.member_count }}</p>
+            <p><strong>Очки фракции:</strong> {{ faction.points }}</p>
+        </section>
+
+        <section id="actions">
+            <h2>Действия</h2>
+            <ul>
+                <li><a href="/history">Просмотреть историю операций</a></li>
+                <li><a href="/store">Перейти в магазин</a></li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 CubeGameBot. Все права защищены.</p>
+    </footer>
+{% endblock %}

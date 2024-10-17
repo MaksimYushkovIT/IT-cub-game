@@ -1,0 +1,43 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Редактировать профиль{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Редактировать профиль</h1>
+
+    <form method="POST">
+        <div class="mb-3">
+            <label for="nickname" class="form-label">Никнейм</label>
+            <input type="text" class="form-control" id="nickname" name="nickname" value="{{ user.nickname }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="status" class="form-label">Статус</label>
+            <input type="text" class="form-control" id="status" name="status" value="{{ user.StudentStatus }}">
+        </div>
+        <div class="mb-3">
+            <label for="group" class="form-label">Группа</label>
+            <select class="form-control" id="group" name="group">
+                <option value="ВИАР" {% if user.StudentGroup == 'ВИАР' %}selected{% endif %}>ВИАР</option>
+                <option value="Прототипирование" {% if user.StudentGroup == 'Прототипирование' %}selected{% endif %}>Прототипирование</option>
+                <option value="Python" {% if user.StudentGroup == 'Python' %}selected{% endif %}>Python</option>
+                <option value="Робототехника" {% if user.StudentGroup == 'Робототехника' %}selected{% endif %}>Робототехника</option>
+                <option value="Промышленная робототехника" {% if user.StudentGroup == 'Промышленная робототехника' %}selected{% endif %}>Промышленная робототехника</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="teacher" class="form-label">Педагог</label>
+            <input type="text" class="form-control" id="teacher" name="teacher" value="{{ user.TeacherName }}">
+        </div>
+        <div class="mb-3">
+            <label for="telegram" class="form-label">Telegram</label>
+            <input type="url" class="form-control" id="telegram" name="telegram" value="{{ user.telegram }}">
+        </div>
+        <div class="mb-3">
+            <label for="discord" class="form-label">Discord</label>
+            <input type="url" class="form-control" id="discord" name="discord" value="{{ user.discord }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+    </form>
+</div>
+{% endblock %}

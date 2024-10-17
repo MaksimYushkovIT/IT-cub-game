@@ -1,0 +1,164 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block style %}
+        .news-section {
+            margin: 50px auto;
+            width: 1000px;
+        }
+
+        .news-header {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .news-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .arrow {
+            cursor: pointer;
+            font-size: 2em;
+            background-color: #f1f1f1;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .news-item {
+            width: 250px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            overflow: hidden;
+            transition: transform 0.3s ease; /* Добавляем анимацию для увеличения */
+        }
+
+        .news-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.3s ease; /* Анимация для увеличения картинки */
+        }
+
+        .news-item h4 {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+        .news-item p {
+            font-size: 0.9em;
+            color: #666;
+            padding: 0 10px;
+        }
+
+        .news-item:hover img {
+            transform: scale(1.1); /* Увеличение изображения при наведении */
+        }
+
+        .news-item a {
+            text-decoration: none;
+            color: black;
+        }
+
+        .news-item a:hover h4 {
+            color: #3498db; /* Изменение цвета текста при наведении на ссылку */
+        }
+{% endblock %}
+{% block content %}
+    <header>
+        <div class="logo">
+            <h1>Название платформы</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#">Главная</a></li>
+                <li><a href="#">О нас</a></li>
+                <li><a href="#">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="intro">
+            <h2>Добро пожаловать на нашу образовательную платформу!</h2>
+            <p>Здесь вы найдете актуальные новости, образовательные материалы и многое другое.</p>
+        </section>
+
+        <div class="news-section">
+            <div class="news-header">Лучшее</div>
+
+            <div class="news-container">
+                <div class="arrow" id="prev-arrow">◀</div>
+
+                <div class="news-item" id="news1">
+                    <a href="news1.html">
+                        <img src="https://via.placeholder.com/250x200.png?text=Image+1" alt="Новость 1">
+                        <h4>Пластилиновая анимация: российская школа</h4>
+                        <p>От «Пластилиновой вороны» до пластилиновой «Сосиски»</p>
+                    </a>
+                </div>
+
+                <div class="news-item" id="news2">
+                    <a href="news2.html">
+                        <img src="https://via.placeholder.com/250x200.png?text=Image+2" alt="Новость 2">
+                        <h4>Опрос: любимые герои медиевистов</h4>
+                        <p>Историки признаются в любви к деятелям Средневековья</p>
+                    </a>
+                </div>
+
+                <div class="news-item" id="news3">
+                    <a href="news3.html">
+                        <img src="https://via.placeholder.com/250x200.png?text=Image+3" alt="Новость 3">
+                        <h4>Рейтинг альбомов The Beatles: от худшего к лучшему</h4>
+                        <p>Удачные и не очень кавер-версии, яркие хиты и незаметные шедевры</p>
+                    </a>
+                </div>
+
+                <div class="arrow" id="next-arrow">▶</div>
+            </div>
+        </div>
+
+        <script src="scripts/news.js"></script>
+
+        <div class="news-category">
+            <h3>Новости мероприятий</h3>
+            <div class="news-item">
+                <h4>Заголовок мероприятия</h4>
+                <p>Краткое описание мероприятия...</p>
+                <a href="#">Читать далее</a>
+            </div>
+            <div class="news-item">
+                <h4>Заголовок мероприятия</h4>
+                <p>Краткое описание мероприятия...</p>
+                <a href="#">Читать далее</a>
+            </div>
+        </div>
+
+        <div class="news-category">
+            <h3>Образовательные материалы</h3>
+            <div class="news-item">
+                <h4>Заголовок образовательного материала</h4>
+                <p>Краткое описание...</p>
+                <a href="#">Читать далее</a>
+            </div>
+            <div class="news-item">
+                <h4>Заголовок образовательного материала</h4>
+                <p>Краткое описание...</p>
+                <a href="#">Читать далее</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2024 Название платформы. Все права защищены.</p>
+    </footer>
+{% endblock %}

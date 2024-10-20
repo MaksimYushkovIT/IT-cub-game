@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template, jsonify, request, abort, redirect, url_for
+from flask import Blueprint, render_template, jsonify, request, abort, redirect, url_for, flash
 from ..models.loreM import Lore
 from ..models.userM import User
 from ..extensions import db
-from flask_login import current_user
-
+from flask_login import login_required, current_user
+from ..decorators import teacher_required
+from sqlalchemy.exc import IntegrityError
 
 lore = Blueprint('lore', __name__)
 
@@ -48,18 +49,36 @@ def lore_article(article_id):
     lore = Lore.query.get_or_404(article_id)
     return render_template('lore/lore_article.html', lore=lore)
 
+from flask_login import current_user, login_required
+
 @lore.route('/create_lore', methods=['GET', 'POST'])
+@login_required
+@teacher_required
 def create_lore():
     if not current_user.is_authenticated:
-        abort(401, description='Вы не авторизованы')
-    if not current_user.is_teacher:
-        abort(403, description='Вы не имеете права создавать лор')
+        flash('Пожалуйста, войдите в систему для создания лора.', 'error')
+        return redirect(url_for('auth.login'))
+
     if request.method == 'POST':
-        title = request.form.get('title')
-        text = request.form.get('text')
-        category = request.form.get('category')
-        new_lore = Lore(title=title, text=text, category=category, author_id=current_user.id)
+        title = request.form['title']
+        text = request.form['text']
+        category = request.form['category']
+        
+        new_lore = Lore(
+            title=title,
+            text=text,
+            category=category,
+            author_id=current_user.id,  # Убедитесь, что это поле заполнено
+            status='draft'
+        )
+        
         db.session.add(new_lore)
-        db.session.commit()
-        return redirect(url_for('lore.lore_index'))
+        try:
+            db.session.commit()
+            flash('Лор успешно создан!', 'success')
+            return redirect(url_for('lore.lore'))
+        except IntegrityError:
+            db.session.rollback()
+            flash('Произошла ошибка при создании лора. Пожалуйста, попробуйте еще раз.', 'error')
+    
     return render_template('lore/create_lore.html')

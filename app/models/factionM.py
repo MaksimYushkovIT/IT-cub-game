@@ -18,18 +18,29 @@ class Faction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
-    leader_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    leader_id = db.Column(db.Integer, db.ForeignKey('users.id', name='fk_faction_leader', ondelete='SET NULL'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     experience = db.Column(db.Integer, default=0)
     level = db.Column(db.Integer, default=1)
 
-    leader = db.relationship('User', backref='faction_leader', lazy=True)
-    members = db.relationship('User', secondary='user_factions', backref=db.backref('faction_members', lazy=True))
+    leader = db.relationship('User', foreign_keys=[leader_id], backref='faction_leader', lazy=True)
+    users = db.relationship('User', secondary=user_factions, back_populates='factions')
     ranks = db.relationship('Rank', backref='faction', lazy=True)
     achievements = db.relationship('Achievement', secondary='achievement_factions', backref=db.backref('faction_achievements', lazy=True))
     users = db.relationship('User', secondary=user_factions, back_populates='factions')
     
+    def add_experience(self, amount):
+        self.experience += amount
+        while self.experience >= 1000:
+            self.level_up()
+        
+        db.session.commit()
+
+    def level_up(self):
+        self.level += 1
+        self.experience -= 1000
+
     def __repr__(self):
         return f'<Faction {self.name}>'
 

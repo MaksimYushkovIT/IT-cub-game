@@ -8,27 +8,27 @@
 
 body {
     font-family: 'Montserrat', sans-serif;
-    background-color: #f7f7f7;
+    background-color: #e6f3ff;
     color: #333;
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
-    color: #2ecc71;
+    color: #007bff;
 }
 
 a {
     text-decoration: none;
-    color: #2ecc71;
+    color: #007bff;
 }
 
 img {
     display: block;
     margin: 10px auto;
-  }
+}
 
 a:hover {
-    color: #1abc9c;
+    color: #0056b3;
 }
 
 /* Контейнеры */
@@ -38,9 +38,9 @@ a:hover {
     margin: 0 auto;
     padding: 20px;
     background-color: #fff;
-    border: 1px solid #ddd;
+    border: 1px solid #b3d7ff;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.1);
 }
 
 /* Блоки */
@@ -48,16 +48,16 @@ a:hover {
 .block {
     margin-bottom: 20px;
     padding: 20px;
-    border: 1px solid #ddd;
+    border: 1px solid #b3d7ff;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.1);
 }
 
 .block-header {
-    background-color: #2ecc71;
+    background-color: #007bff;
     color: #fff;
     padding: 10px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #b3d7ff;
 }
 
 .block-body {
@@ -74,21 +74,21 @@ a:hover {
 }
 
 .btn-primary {
-    background-color: #2ecc71;
+    background-color: #007bff;
     color: #fff;
 }
 
 .btn-primary:hover {
-    background-color: #1abc9c;
+    background-color: #0056b3;
 }
 
 .btn-secondary {
-    background-color: #ddd;
+    background-color: #b3d7ff;
     color: #333;
 }
 
 .btn-secondary:hover {
-    background-color: #ccc;
+    background-color: #8fc1ff;
 }
 
 /* Формы */
@@ -99,13 +99,13 @@ a:hover {
 
 .form-control {
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid #b3d7ff;
     border-radius: 5px;
 }
 
 .form-control:focus {
-    border-color: #2ecc71;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-color: #007bff;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.1);
 }
 
 /* Таблицы */
@@ -116,13 +116,13 @@ a:hover {
 }
 
 .table th, .table td {
-    border: 1px solid #ddd;
+    border: 1px solid #b3d7ff;
     padding: 10px;
     text-align: left;
 }
 
 .table th {
-    background-color: #2ecc71;
+    background-color: #007bff;
     color: #fff;
 }
 
@@ -137,9 +137,9 @@ a:hover {
 .post-block {
     margin: 20px;
     padding: 20px;
-    border: 1px solid #ddd;
+    border: 1px solid #b3d7ff;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.1);
     width: calc(33.33% - 40px);
 }
 
@@ -153,7 +153,6 @@ a:hover {
 .post-actions {
     margin-top: 10px;
 }
-
 
 .header__img {
     width: 5vw;
@@ -182,7 +181,7 @@ a:hover {
     border: 2px solid #007bff;
     border-radius: 10px;
     padding: 20px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     z-index: 1000;
     display: none;
 }

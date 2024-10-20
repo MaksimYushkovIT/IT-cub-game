@@ -1,0 +1,57 @@
+{% extends 'teacher/students.html' %}
+
+{% block filters %}
+<div class="filter-section mb-4">
+    <h3>Фильтры</h3>
+    <form method="GET" action="{{ url_for('student.students_by_discipline', discipline_id=discipline.id) }}" class="form-inline">
+        <div class="form-group mr-2">
+            <label for="group" class="mr-2">Группа:</label>
+            <select name="group" id="group" class="form-control" multiple>
+                {% for group in groups %}
+                    <option value="{{ group.id }}" {% if group.id|string in request.args.getlist('group') %}selected{% endif %}>{{ group.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group mr-2">
+            <label for="teacher" class="mr-2">Учитель:</label>
+            <select name="teacher" id="teacher" class="form-control" multiple>
+                {% for teacher in teachers %}
+                    <option value="{{ teacher.id }}" {% if teacher.id|string in request.args.getlist('teacher') %}selected{% endif %}>{{ teacher.last_name }} {{ teacher.first_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group mr-2">
+            <label for="min_level" class="mr-2">Мин. уровень:</label>
+            <input type="number" name="min_level" id="min_level" class="form-control" value="{{ request.args.get('min_level', '') }}">
+        </div>
+
+        <div class="form-group mr-2">
+            <label for="max_level" class="mr-2">Макс. уровень:</label>
+            <input type="number" name="max_level" id="max_level" class="form-control" value="{{ request.args.get('max_level', '') }}">
+        </div>
+
+        <div class="form-group mr-2">
+            <label for="position" class="mr-2">Должность:</label>
+            <select name="position" id="position" class="form-control" multiple>
+                <option value="новичок" {% if 'новичок' in request.args.getlist('position') %}selected{% endif %}>Новичок</option>
+                <option value="ученик" {% if 'ученик' in request.args.getlist('position') %}selected{% endif %}>Ученик</option>
+                <option value="продвинутый" {% if 'продвинутый' in request.args.getlist('position') %}selected{% endif %}>Продвинутый</option>
+                <!-- Добавьте другие должности по необходимости -->
+            </select>
+        </div>
+
+        <div class="form-group mr-2">
+            <label for="sort" class="mr-2">Сортировка:</label>
+            <select name="sort" id="sort" class="form-control">
+                <option value="last_name" {% if request.args.get('sort') == 'last_name' %}selected{% endif %}>По фамилии</option>
+                <option value="first_name" {% if request.args.get('sort') == 'first_name' %}selected{% endif %}>По имени</option>
+                <option value="level" {% if request.args.get('sort') == 'level' %}selected{% endif %}>По уровню</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary mr-2">Применить фильтры</button>
+        <a href="{{ url_for('student.students_by_discipline', discipline_id=discipline.id) }}" class="btn btn-secondary">Сбросить фильтры</a>
+    </form> </div>
+{% endblock %}

@@ -1,6 +1,8 @@
+version: '3.8'
+
 services:
   postgres:
-    image: postgres
+    image: postgres:17 
     container_name: postgres
     volumes:
       - ~/.pg/pg_data/flask-yt:/var/lib/postgresql/data
@@ -8,30 +10,51 @@ services:
       - .env
     ports:
       - "54321:5432"
+    restart: unless-stopped
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
   flask:
     build:
-      dockerfile: Dockerfile
       context: .
+      dockerfile: Dockerfile
+    image: cubegame-flask
     container_name: flask
     volumes:
-      - ./app:/app
+      - .:/app
       - ./app.ini:/app/app.ini
     env_file:
       - .env
     environment:
-      - POSTGRES_HOST=${POSTGRES_HOST}
-      - POSTGRES_PORT=${POSTGRES_PORT}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      FLASK_APP: wsgi.py
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     expose:
       - 8080
+    restart: unless-stopped
+    networks:
+      - app-network
+
   nginx:
     build:
-      dockerfile: ./Dockerfile
       context: ./nginx/
+      dockerfile: Dockerfile
+    image: cubegame-nginx
     container_name: nginx
     env_file:
       - .env
@@ -39,3 +62,10 @@ services:
       - flask
     ports:
       - "8080:80"
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

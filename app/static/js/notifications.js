@@ -1,3 +1,6 @@
+// Глобальная переменная для хранения ID текущего пользователя
+let currentUserId;
+
 function showItemNotification(itemName, itemDescription) {
     const notification = document.getElementById('itemNotification');
     const nameElement = document.getElementById('itemName');
@@ -11,34 +14,74 @@ function showItemNotification(itemName, itemDescription) {
     notification.style.opacity = '0';
     notification.style.display = 'block';
 
-    let opacity = 0;
-    const fadeIn = setInterval(() => {
-        if (opacity >= 1) {
-            clearInterval(fadeIn);
-        }
-        notification.style.opacity = opacity;
-        opacity += 0.1;
-    }, 50);
+    fadeElement(notification, 0, 1);
 
     acceptButton.onclick = hideNotification;
     inventoryButton.onclick = () => {
         hideNotification();
-        // Добавьте здесь код для перехода в инвентарь
-        // Например: window.location.href = '/inventory';
+        if (currentUserId) {
+            window.location.href = `/profile/${currentUserId}`;
+        } else {
+            console.error('User ID is not set');
+        }
     };
 
     function hideNotification() {
-        let opacity = 1;
-        const fadeOut = setInterval(() => {
-            if (opacity <= 0) {
-                clearInterval(fadeOut);
-                notification.style.display = 'none';
-            }
-            notification.style.opacity = opacity;
-            opacity -= 0.1;
-        }, 50);
+        fadeElement(notification, 1, 0, () => {
+            notification.style.display = 'none';
+        });
     }
 }
+
+function fadeElement(element, start, end, callback) {
+    let opacity = start;
+    const step = 0.1;
+    const interval = setInterval(() => {
+        if ((start < end && opacity >= end) || (start > end && opacity <= end)) {
+            clearInterval(interval);
+            if (callback) callback();
+        }
+        element.style.opacity = opacity;
+        opacity += (end - start > 0 ? step : -step);
+    }, 50);
+}
+
+
+// Функция для установки ID текущего пользователя
+function setCurrentUserId(userId) {
+    currentUserId = userId;
+}
+
+// Вызываем функцию проверки при загрузке страницы
+document.addEventListener('DOMContentLoaded', checkUnreadNotifications);
+
+function fadeElement(element, start, end, callback) {
+    let opacity = start;
+    const step = 0.1;
+    const interval = setInterval(() => {
+        if ((start < end && opacity >= end) || (start > end && opacity <= end)) {
+            clearInterval(interval);
+            if (callback) callback();
+        }
+        element.style.opacity = opacity;
+        opacity += (end - start > 0 ? step : -step);
+    }, 50);
+}
+
+// Функция для проверки непрочитанных уведомлений при загрузке страницы
+function checkUnreadNotifications() {
+    fetch('/get_unread_notifications')
+        .then(response => response.json())
+        .then(notifications => {
+            notifications.forEach(notification => {
+                showItemNotification(notification.name, notification.description);
+            });
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+// Вызываем функцию проверки при загрузке страницы
+document.addEventListener('DOMContentLoaded', checkUnreadNotifications);
 
 $(document).ready(function() {
     $.ajax({
@@ -51,3 +94,25 @@ $(document).ready(function() {
         }
     });
 });
+
+function addItemToUser(itemId, quantity = 1) {
+    fetch('/add_item_to_user', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            item_id: itemId,
+            quantity: quantity
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showItemNotification(data.item_name, data.item_description);
+        } else {
+            console. error('Error:', data.message);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}

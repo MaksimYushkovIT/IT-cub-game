@@ -110,5 +110,69 @@
         <a href="{{ url_for('auth.edit_profile') }}" class="btn btn-primary">Редактировать профиль</a>
     </div>
     {% endif %}
+    <!-- Новый раздел для инвентаря -->
+    <h2>Инвентарь</h2>
+    <div class="inventory-grid">
+        {% for item in user.items %}
+        <div class="inventory-item" data-toggle="tooltip" title="{{ item.description }}">
+            <img src="{{ item.image }}" alt="{{ item.name }}" class="inventory-item-image">
+            <div class="inventory-item-name">{{ item.name }}</div>
+        </div>
+        {% else %}
+        <p>У пользователя пока нет предметов в инвентаре.</p>
+        {% endfor %}
+    </div>
+</div>
 </div>
 {% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .inventory-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .inventory-item {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 10px;
+        text-align: center;
+        background-color: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+
+    .inventory-item:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .inventory-item-image {
+        width: 100%;
+        height: auto;
+        max-height: 80px;
+        object-fit: contain;
+    }
+
+    .inventory-item-name {
+        margin-top: 5px;
+        font-size: 0.8em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+{% endblock %}
+

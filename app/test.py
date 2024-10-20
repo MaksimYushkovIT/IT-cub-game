@@ -21,7 +21,7 @@ def populate_db():
                 name='Программирование',  # Название дисциплины
                 description='Описание дисциплины',  # Описание дисциплины
                 created_at=datetime.utcnow(),  # Дата создания дисциплины
-                updated_at=datetime.utcnow()  # Дата обновления дисциплины
+                updated_at=datetime.utcnow(),  # Дата обновления дисциплины
             )
             db.session.add(discipline)
             db.session.commit()
@@ -207,7 +207,8 @@ def populate_db():
     if not group:
         group = Group(
             name='Группа 1',
-            description='Описание группы 1'
+            description='Описание группы 1',
+            discipline_id=discipline.id  # Добавляем discipline_id
         )
         db.session.add(group)
         db.session.commit()

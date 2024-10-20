@@ -47,20 +47,15 @@
 
                 <div class="mt-4 mb-4">
                     <form action="{{ url_for('post.like_post', post_id=post.id) }}" method="post" class="d-inline">
-                        <button type="submit" class="btn btn-outline-primary">
+                        <button type="button" class="btn {% if post.is_liked_by(current_user) %}btn-primary{% else %}btn-outline-primary{% endif %} likeButton" data-post-id="{{ post.id }}">
                             {% if post.is_liked_by(current_user) %}
-                                <i class="fas fa-heart"></i> Убрать лайк
+                                Убрать лайк
                             {% else %}
-                                <i class="far fa-heart"></i> Лайк
+                                Лайк
                             {% endif %}
-                            <span class="badge bg-secondary">{{ post.likes }}</span>
+                            <span class="badge bg-secondary like-count">{{ post.likes }}</span>
                         </button>
                     </form>
-                    {% if current_user.is_authenticated and (current_user.id == post.author_id or current_user.is_admin or current_user.is_teacher) %}
-                    <a href="{{ url_for('post.edit_post', post_id=post.id) }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-edit"></i> Редактировать
-                    </a>
-                {% endif %}
             
                 {% if current_user.is_authenticated and (current_user.is_admin or current_user.is_teacher) %}
                     {% if post.moderation_status == 'pending' %}
@@ -253,5 +248,36 @@
                 }
             });
         });
+        </script>
+        <script>
+            $(document).ready(function() {
+                $('.likeButton').click(function(e) {
+                    e.preventDefault();
+                    var postId = $(this).data('post-id');
+                    var button = $(this);
+                    
+                    $.ajax({
+                        url: '/like/' + postId,
+                        type: 'POST',
+                        success: function(response) {
+                            var likeCount = button.find('.like-count');
+                            likeCount.text(response.likes);
+                            
+                            if (response.status === 'liked') {
+                                button.html('Убрать лайк <span class="badge bg-secondary like-count">' + response.likes + '</span>');
+                                button.removeClass('btn-outline-primary').addClass('btn-primary');
+                            } else if (response.status === 'unliked') {
+                                button.html('Лайк <span class="badge bg-secondary like-count">' + response.likes + '</span>');
+                                button.removeClass('btn-primary').addClass('btn-outline-primary');
+                            }
+                            
+                            console.log('Response:', response);  // Лог для отладки
+                        },
+                        error: function(error) {
+                            console.log('Error:', error);
+                        }
+                    });
+                });
+            });
         </script>
 {% endblock %}

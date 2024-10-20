@@ -1,0 +1,63 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Создать достижение{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Создать новое достижение</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Название достижения:</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Описание достижения:</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Категория:</label>
+                            <input type="text" class="form-control" id="category" name="category">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="type" class="form-label">Тип достижения:</label>
+                            <select class="form-select" id="type" name="type" required>
+                                <option value="one_time">Одноразовое</option>
+                                <option value="progressive">Прогрессивное</option>
+                                <option value="hidden">Скрытое</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="event_id" class="form-label">Связанное событие (если есть):</label>
+                            <select class="form-select" id="event_id" name="event_id">
+                                <option value="">Нет связанного события</option>
+                                {% for event in events %}
+                                    <option value="{{ event.id }}">{{ event.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="avatar" class="form-label">URL изображения достижения:</label>
+                            <input type="url" class="form-control" id="avatar" name="avatar">
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Создать достижение</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

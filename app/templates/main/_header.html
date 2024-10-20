@@ -16,7 +16,7 @@
               <li><a href="/factions" class="nav-link px-2">Факультет</a></li>
           {% elif current_user.is_admin %}
               <li><a href="/quests" class="nav-link px-2">Квесты</a></li>
-              <li><a href="#" class="nav-link px-2">Преподаватели</a></li>
+              <li><a href="{{ url_for('admin.teachers_list') }}" class="nav-link px-2">Преподаватели</a></li>
               <li><a href="{{ url_for('student.disciplines') }}" class="nav-link px-2">Ученики</a></li>
               <li><a href="/shop" class="nav-link px-2">Магазин</a></li>
               <li><a href="/lore" class="nav-link px-2">Лор</a></li>

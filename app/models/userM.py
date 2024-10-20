@@ -18,6 +18,11 @@ user_groups = db.Table('user_groups',
     db.Column('group_id', db.Integer, db.ForeignKey('groups.id'))
 )
 
+student_teachers = db.Table('student_teachers',
+    db.Column('student_id', db.Integer, db.ForeignKey('users.id')),
+    db.Column('teacher_id', db.Integer, db.ForeignKey('users.id'))
+)
+
 # Информация о достижениях пользователя
 user_achievements = db.Table('user_achievements',
     db.Column('achievement_id', db.Integer, db.ForeignKey('achievements.id')),
@@ -55,6 +60,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)  # Email пользователя
     password = db.Column(db.String(200), nullable=False)  # Пароль пользователя
     unread_notifications = db.relationship('UnreadNotification', backref='user', lazy='dynamic')
+    
     # Информация о личности пользователя
     last_name = db.Column(db.String(50), nullable=False)  # Фамилия пользователя
     first_name = db.Column(db.String(50), nullable=False)  # Имя пользователя
@@ -84,7 +90,7 @@ class User(UserMixin, db.Model):
     telegram_link = db.Column(db.String(200), nullable=True)  # Ссылка на Telegram пользователя
     discord_link = db.Column(db.String(200), nullable=True)  # Ссылка на Discord пользователя
     avatar = db.Column(db.String(200), nullable=True)  # Аватар пользователя
-    discipline_id = db.Column(db.Integer, db.ForeignKey('disciplines.id'), nullable=True)
+    discipline_id = db.Column(db.Integer, db.ForeignKey('disciplines.id', name='fk_user_discipline', ondelete='SET NULL'), nullable=True)
     discipline = db.relationship('Discipline', backref='user_disciplines', lazy=True)
     disciplines = db.relationship('Discipline', secondary='user_disciplines', back_populates='users')
     # Информация о группе пользователя
@@ -93,13 +99,21 @@ class User(UserMixin, db.Model):
     # Информация о предметах и педагогическом стаже учителя (для учителей)
     is_teacher = db.Column(db.Boolean, default=False)
     teacher_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)  # Связь с учителем
-    teacher = db.relationship('User', remote_side=[id], backref='students')  # Связь с учителем
+    teachers = db.relationship(
+        'User', secondary=student_teachers,
+        primaryjoin=(student_teachers.c.student_id == id),
+        secondaryjoin=(student_teachers.c.teacher_id == id),
+        backref=db.backref('students', lazy='dynamic'),
+        lazy='dynamic'
+    )
     discipline_teachers = db.relationship('Discipline', secondary='teacher_disciplines', back_populates='teachers')
     Teacher_subjects = db.relationship('Discipline', secondary='teacher_disciplines', back_populates='teachers', overlaps='discipline_teachers,teachers')
     lore = db.Column(db.Text, nullable=True)  # Лор учителя
     pedstage = db.Column(db.String(100), nullable=True)  # Педагогический стаж учителя
     achievements = db.relationship('Achievement', secondary='user_achievements', back_populates='users')
     comments = db.relationship('Comment', back_populates='author', lazy=True)
+    faction_id = db.Column(db.Integer, db.ForeignKey('factions.id', name='fk_user_faction', ondelete='SET NULL'), nullable=True)
+    faction = db.relationship('Faction', foreign_keys=[faction_id], backref='members', lazy=True)
     factions = db.relationship('Faction', secondary=user_factions, back_populates='users')
     user_completed_events = db.relationship('Event', secondary='event_players_competed',
                     primaryjoin='User.id == event_players_competed.c.user_id',
@@ -109,6 +123,21 @@ class User(UserMixin, db.Model):
     student_projects = db.relationship('Project', secondary='project_students', back_populates='project_students')
     teacher_projects = db.relationship('Project', secondary='project_teachers', back_populates='project_teachers')
 
+
+    def add_experience(self, amount):
+        self.experience += amount
+        while self.experience >= 100:
+            self.level_up()
+        
+        if self.faction:
+            self.faction.add_experience(amount)
+        
+        db.session.commit()
+
+    def level_up(self):
+        self.level += 1
+        self.experience -= 100
+        
     # Методы для работы с паролями
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -145,3 +174,19 @@ class User(UserMixin, db.Model):
     def clear_unread_notifications(self):
         self.unread_notifications.delete()
         db.session.commit()
+
+    def add_to_group(self, group):
+        if group not in self.groups:
+            self.groups.append(group)
+
+    def remove_from_group(self, group):
+        if group in self.groups:
+            self.groups.remove(group)
+
+    def add_teacher(self, teacher):
+        if not self.is_teacher and teacher.is_teacher and teacher not in self.teachers:
+            self.teachers.append(teacher)
+
+    def remove_teacher(self, teacher):
+        if teacher in self.teachers:
+            self.teachers.remove(teacher)

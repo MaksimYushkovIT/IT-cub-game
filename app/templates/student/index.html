@@ -95,26 +95,32 @@
 <script>
     $(document).ready(function() {
         $('.likeButton').click(function(e) {
-            e.preventDefault();
-            var postId = $(this).data('post-id');
-            var button = $(this);
-            
-            $.ajax({
-                url: '/like/' + postId,
-                type: 'POST',
-                success: function(response) {
-                    var likeCount = button.find('.like-count');
-                    if (button.text().trim() === 'Лайк') {
-                        button.html('Убрать лайк <span class="badge bg-secondary like-count">' + (parseInt(likeCount.text()) + 1) + '</span>');
-                    } else {
-                        button.html('Лайк <span class="badge bg-secondary like-count">' + (parseInt(likeCount.text()) - 1) + '</span>');
-                    }
-                },
-                error: function(error) {
-                    console.log('Error:', error);
+        e.preventDefault();
+        var postId = $(this).data('post-id');
+        var button = $(this);
+        
+        $.ajax({
+            url: '/like/' + postId,
+            type: 'POST',
+            success: function(response) {
+                var likeCount = button.find('.like-count');
+                likeCount.text(response.likes);
+                
+                if (response.status === 'liked') {
+                    button.html('Убрать лайк <span class="badge bg-secondary like-count">' + response.likes + '</span>');
+                    button.removeClass('btn-outline-primary').addClass('btn-primary');
+                } else if (response.status === 'unliked') {
+                    button.html('Лайк <span class="badge bg-secondary like-count">' + response.likes + '</span>');
+                    button.removeClass('btn-primary').addClass('btn-outline-primary');
                 }
-            });
+                
+                console.log('Response:', response);  // Лог для отладки
+            },
+            error: function(error) {
+                console.log('Error:', error);
+            }
         });
+    });
         $('.leaveEventButton').click(function(e) {
         e.preventDefault();
         var form = $(this).closest('form');

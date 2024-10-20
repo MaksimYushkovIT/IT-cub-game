@@ -12,28 +12,32 @@
             <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required>
         </div>
         <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+            <label for="last_name" class="form-label">Фамилия</label>
+            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name }}">
         </div>
         <div class="mb-3">
             <label for="first_name" class="form-label">Имя</label>
             <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}">
         </div>
         <div class="mb-3">
-            <label for="last_name" class="form-label">Фамилия</label>
-            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name }}">
-        </div>
-        <div class="mb-3">
             <label for="patronymic" class="form-label">Отчество</label>
             <input type="text" class="form-control" id="patronymic" name="patronymic" value="{{ user.patronymic }}">
         </div>
         <div class="mb-3">
-            <label for="group" class="form-label">Группа</label>
-            <select class="form-control" id="group" name="group">
-                {% for group in groups %}
-                    <option value="{{ group.name }}" {% if group in user.groups %}selected{% endif %}>{{ group.name }}</option>
-                {% endfor %}
-            </select>
+            <label for="birthday" class="form-label">Дата рождения</label>
+            <input type="date" class="form-control" id="birthday" name="birthday" 
+                   value="{{ user.birthday.strftime('%Y-%m-%d') if user.birthday else '' }}">
+        </div>
+        <div class="mb-3">
+            <label for="avatar" class="form-label">Аватар</label>
+            <input type="text" class="form-control" id="avatar" name="avatar" value="{{ user.avatar }}">
+        </div>
+        <div class="mb-3">
+            <label for="bio" class="form-label">О себе</label> <textarea class="form-control" id="bio" name="bio">{{ user.bio }}</textarea>
+        </div>
+        <div class="mb-3">
+            <label for="contact_info" class="form-label">Контактная информация</label>
+            <textarea class="form-control" id="contact_info" name="contact_info">{{ user.contact_info }}</textarea>
         </div>
         <div class="mb-3">
             <label for="telegram_link" class="form-label">Ссылка на Telegram</label>
@@ -43,6 +47,39 @@
             <label for="discord_link" class="form-label">Ссылка на Discord</label>
             <input type="text" class="form-control" id="discord_link" name="discord_link" value="{{ user.discord_link }}">
         </div>
+
+        {% if user.is_student %}
+        <div class="mb-3">
+            <label for="groups" class="form-label">Группы</label>
+            <select multiple class="form-control" id="groups" name="groups">
+                {% for group in groups %}
+                    <option value="{{ group.id }}" {% if group in user.groups %}selected{% endif %}>{{ group.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="teachers" class="form-label">Учителя</label>
+            <select multiple class="form-control" id="teachers" name="teachers">
+                {% for teacher in teachers %}
+                    <option value="{{ teacher.id }}" {% if teacher in user.teachers %}selected{% endif %}>{{ teacher.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+
+        {% if user.is_teacher %}
+        <div class="mb-3">
+            <label for="faction" class="form-label">Фракция</label>
+            <select class="form-control" id="faction" name="faction">
+                <option value="">Выберите фракцию</option>
+                {% for faction in factions %}
+                <option value="{{ faction.id }}" {% if user.faction == faction %}selected{% endif %}>{{ faction.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+
         <button type="submit" class="btn btn-primary">Сохранить изменения</button>
     </form>
 </div>

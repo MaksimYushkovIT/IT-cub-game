@@ -6,6 +6,86 @@
 <div class="container">
     <h1>Поздравляем!</h1>
     <p>Вы нашли секретную страницу. Молодец!</p>
-    <img src="{{ url_for('static', filename='img/catinhat.png') }}" alt="Cat in Hat" style="width: 200px;">
+    <img src="{{ url_for('static', filename='img/catinhat.png') }}" alt="Cat in Hat" style="width: 200px;" id="catImage">
+    <div id="itemMessage" style="display: none; margin-top: 20px;" class="alert alert-success"></div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    $(document).ready(function() {
+        $('#catImage').click(function() {
+            $.ajax({
+                url: '{{ url_for("other.get_cat_item") }}',
+                type: 'POST',
+                success: function(response) {
+                    if (response.success) {
+                        $('#itemMessage').text(response.message).show();
+                    } else {
+                        $('#itemMessage').text(response.message).removeClass('alert-success').addClass('alert-warning').show();
+                    }
+                },
+                error: function() {
+                    $('#itemMessage').text('Произошла ошибка. Попробуйте еще раз.').removeClass('alert-success').addClass('alert-danger').show();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .container {
+        text-align: center;
+        padding: 50px;
+    }
+
+    h1 {
+        color: #4a4a4a;
+        margin-bottom: 20px;
+    }
+
+    p {
+        font-size: 18px;
+        color: #666;
+        margin-bottom: 30px;
+    }
+
+    #catImage {
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+    #catImage:hover {
+        transform: scale(1.1);
+    }
+
+    #itemMessage {
+        font-size: 16px;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 20px;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+    }
+
+    .alert-warning {
+        background-color: #fff3cd;
+        border-color: #ffeeba;
+        color: #856404;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+</style>
 {% endblock %}

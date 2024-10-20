@@ -11,10 +11,14 @@ from flask_login import current_user, login_required
 post = Blueprint('post', __name__)
 
 from ..models.userM import User
+from flask import redirect, url_for
+from flask_login import current_user
 
 @post.route('/index')
 @post.route('/')
 def index():
+    if not current_user.is_authenticated:
+        return redirect(url_for('other.how'))
     posts = Post.query.all()
     user_events = [event.id for event in current_user.events] if current_user.is_authenticated else []
     teachers = User.query.filter_by(is_teacher=True).all()
@@ -178,20 +182,28 @@ def add_comment(post_id):
 from flask_login import current_user, login_required
 
 @post.route('/like/<int:post_id>', methods=['POST'])
+@login_required
 def like_post(post_id):
     post = Post.query.get_or_404(post_id)
-    if current_user.is_authenticated:
-        if post.is_liked_by(current_user):
-            post.likes -= 1
-            db.session.commit()
-            return jsonify({'status': 'unliked'})
+    
+    try:
+        if current_user in post.liked_by:
+            post.liked_by.remove(current_user)
+            status = 'unliked'
         else:
-            post.likes += 1
-            db.session.commit()
-            return jsonify({'status': 'liked'})
-    return jsonify({'status': 'error'}), 401
-
-from flask import jsonify, redirect, url_for, request, flash
+            post.liked_by.append(current_user)
+            status = 'liked'
+        
+        # Пересчитываем количество лайков
+        post.likes = len(post.liked_by)
+        
+        db.session.commit()
+        print(f"Post {post_id} {status} by user {current_user.id}. Total likes: {post.likes}")  # Лог для отладки
+        return jsonify({'status': status, 'likes': post.likes})
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error liking post {post_id}: {str(e)}")  # Лог для отладки
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 @post.route('/join_post/<int:post_id>', methods=['POST'])
 @login_required

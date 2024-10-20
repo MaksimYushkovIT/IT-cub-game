@@ -3,12 +3,62 @@
 {% block title %}Создать дисциплину{% endblock %}
 
 {% block content %}
-    <h1>Создать дисциплину</h1>
-    <form action="" method="post">
-        <label for="name">Название дисциплины:</label>
-        <input type="text" id="name" name="name" required>
-        <label for="description">Описание дисциплины:</label>
-        <textarea id="description" name="description" required></textarea>
-        <button type="submit" class="btn btn-primary">Создать</button>
-    </form>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Создать дисциплину</h2>
+                </div>
+                <div class="card-body">
+                    <form action="" method="post">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Название дисциплины</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Описание дисциплины</label>
+                            <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="faction" class="form-label">Фракция</label>
+                            <select class="form-select" id="faction" name="faction_id" required>
+                                {% for faction in factions %}
+                                    <option value="{{ faction.id }}">{{ faction.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Создать дисциплину</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .card {
+        border: none;
+        border-radius: 15px;
+    }
+    .card-header {
+        border-radius: 15px 15px 0 0;
+    }
+    .btn-primary {
+        background-color: #4e73df;
+        border-color: #4e73df;
+    }
+    .btn-primary:hover {
+        background-color: #2e59d9;
+        border-color: #2e59d9;
+    }
+</style>
 {% endblock %}

@@ -3,23 +3,52 @@
 {% block title %}Создать товар{% endblock %}
 
 {% block content %}
-    <h1>Создать товар</h1>
-    <form action="" method="post">
-        <label for="name">Название товара:</label>
-        <input type="text" id="name" name="name" required>
-        
-        <label for="description">Описание товара:</label>
-        <textarea id="description" name="description" required></textarea>
-        
-        <label for="price">Цена товара:</label>
-        <input type="number" id="price" name="price" required>
-        
-        <label for="type">Тип товара:</label>
-        <input type="text" id="type" name="type" required>
-        
-        <label for="category">Категория товара:</label>
-        <input type="text" id="category" name="category" required>
-        
-        <button type="submit" class="btn btn-primary">Создать</button>
-    </form>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Создать новый товар</h3>
+                </div>
+                <div class="card-body">
+                    <form action="" method="post">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Название товара:</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Описание товара:</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="price" class="form-label">Цена товара (куб-коины):</label>
+                            <input type="number" class="form-control" id="price" name="price" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="type" class="form-label">Тип товара:</label>
+                            <input type="text" class="form-control" id="type" name="type" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Категория товара:</label>
+                            <input type="text" class="form-control" id="category" name="category" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="image" class="form-label">URL изображения товара:</label>
+                            <input type="url" class="form-control" id="image" name="image">
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Создать товар</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

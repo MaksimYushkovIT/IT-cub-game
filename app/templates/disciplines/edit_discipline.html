@@ -1,0 +1,29 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Редактировать дисциплину{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Редактировать дисциплину</h1>
+    <form method="POST">
+        <div class="form-group">
+            <label for="name">Название дисциплины</label>
+            <input type="text" class="form-control" id="name" name="name" value="{{ discipline.name }}" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Описание</label>
+            <textarea class="form-control" id="description" name="description" rows="3">{{ discipline.description }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="faction_id">Фракция</label>
+            <select class="form-control" id="faction_id" name="faction_id">
+                <option value="">Выберите фракцию</option>
+                {% for faction in factions %}
+                    <option value="{{ faction.id }}" {% if faction.id == discipline.faction_id %}selected{% endif %}>{{ faction.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+    </form>
+</div>
+{% endblock %}

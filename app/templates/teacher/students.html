@@ -1,106 +1,237 @@
 {% extends 'main/base.html' %}
 
-{% block title %}Ученики{% endblock %}
+{% block title %}Студенты дисциплины {{ discipline.name }}{% endblock %}
 
 {% block content %}
-    <h1>Ученики</h1>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ФИО</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Действия</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for student in students %}
-                <tr>
-                    <td>{{ student.last_name }} {{ student.first_name }} {{ student.patronymic }}</td>
-                    <td>{{ student.username }}</td>
-                    <td>{{ student.email }}</td>
-                    <td>
-                        <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#student-modal-{{ student.id }}">Подробнее</a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<h1>Студенты дисциплины {{ discipline.name }}</h1>
 
-    {% for student in students %}
-        <div class="modal fade" id="student-modal-{{ student.id }}" tabindex="-1" role="dialog" aria-labelledby="student-modal-label-{{ student.id }}" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="student-modal-label-{{ student.id }}">{{ student.last_name }} {{ student.first_name }} {{ student.patronymic }}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+{% block filters %}{% endblock %}
+<div class="action-buttons mb-3">
+    <button id="rewardSelectedBtn" class="btn btn-success" disabled>Наградить выбранных</button>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th><input type="checkbox" id="selectAll"></th>
+            <th>ФИО</th>
+            <th>Дисциплина</th>
+            <th>Группа</th>
+            <th>Уровень</th>
+            <th>Должность</th>
+            <th>Последний вход</th>
+            <th>Проекты</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for student in students %}
+        <tr>
+            <td><input type="checkbox" class="student-checkbox" value="{{ student.id }}"></td>
+            <td>{{ student.last_name }} {{ student.first_name }} {{ student.patronymic }}</td>
+            <td>{{ student.discipline.name }}</td>
+            <td>{{ student.groups[0].name if student.groups else 'Не назначена' }}</td>
+            <td>{{ student.level }}</td>
+            <td>{{ student.position }}</td>
+            <td>{{ student.last_active_at.strftime('%d.%m.%Y %H:%M') if student.last_active_at else 'Нет данных' }}</td>
+            <td>
+                {% for project in student.student_projects %}
+                    <a href="{{ url_for('project.view_project', project_id=project.id) }}">{{ project.name }}</a>{% if not loop.last %}, {% endif %}
+                {% else %}
+                    Нет проектов
+                {% endfor %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Модальное окно для награждения -->
+<div class="modal fade" id="rewardModal" tabindex="-1" role="dialog" aria-labelledby="rewardModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rewardModalLabel">Наградить выбранных учеников</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="rewardForm">
+                    <div class="form-group">
+                        <label for="item">Предмет</label>
+                        <select class="form-control" id="item" name="item">
+                            <option value="">Выберите предмет</option>
+                            {% for item in items %}
+                                <option value="{{ item.id }}">{{ item.name }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
-                    <div class="modal-body">
-                        <ul class="nav nav-tabs" id="student-tabs-{{ student.id }}" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="student-info-tab-{{ student.id }}" data-toggle="tab" href="#student-info-{{ student.id }}" role="tab" aria-controls="student-info-{{ student.id }}" aria-selected="true">Информация</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="student-achievements-tab-{{ student.id }}" data-toggle="tab" href="#student-achievements-{{ student.id }}" role="tab" aria-controls="student-achievements-{{ student.id }}" aria-selected="false">Достижения</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="student-inventory-tab-{{ student.id }}" data-toggle="tab" href="#student-inventory-{{ student.id }}" role="tab" aria-controls="student-inventory-{{ student.id }}" aria-selected="false">Инвентарь</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="student-posts-tab-{{ student.id }}" data-toggle="tab" href="#student-posts-{{ student.id }}" role="tab" aria-controls="student-posts-{{ student.id }}" aria-selected="false">Посты</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="student-comments-tab-{{ student.id }}" data-toggle="tab" href="#student-comments-{{ student.id }}" role="tab" aria-controls="student-comments-{{ student.id }}" aria-selected="false">Комментарии</a>
-                            </li>
-                        </ul>
-                        <div class="tab-content" id="student-tabs-content-{{ student.id }}">
-                            <div class="tab-pane fade show active" id="student-info-{{ student.id }}" role="tabpanel" aria-labelledby="student-info-tab-{{ student.id }}">
-                                <p>Дата рождения: {{ student.birthday }}</p>
-                                <p>Уровень: {{ student.level }}</p>
-                                <p>Куб-коины: {{ student.cube_coins }}</p>
-                                <p>Опыт: {{ student.experience }}</p>
-                                <p>Должность во фракции: {{ student.position }}</p>
-                                <p>Telegram: {{ student.telegram_link }}</p>
-                                <p>Discord: {{ student.discord_link }}</p>
-                                <p>Группа: {{ student.group }}</p>
-                            </div>
-                            <div class="tab-pane fade" id="student-achievements-{{ student.id }}" role="tabpanel" aria-labelledby="student-achievements -tab-{{ student.id }}">
-                                <ul>
-                                    {% for achievement in student.achievements %}
-                                        <li>{{ achievement.name }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            <div class="tab-pane fade" id="student-inventory-{{ student.id }}" role="tabpanel" aria-labelledby="student-inventory-tab-{{ student.id }}">
-                                <ul>
-                                    {% for item in student.inventory %}
-                                        <li>{{ item.name }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            <div class="tab-pane fade" id="student-posts-{{ student.id }}" role="tabpanel" aria-labelledby="student-posts-tab-{{ student.id }}">
-                                <ul>
-                                    {% for post in student.posts %}
-                                        <li>{{ post.title }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            <div class="tab-pane fade" id="student-comments-{{ student.id }}" role="tabpanel" aria-labelledby="student-comments-tab-{{ student.id }}">
-                                <ul>
-                                    {% for comment in student.comments %}
-                                        <li>{{ comment.text }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        <label for="experience">Опыт</label>
+                        <input type="number" class="form-control" id="experience" name="experience" value="0">
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                    <div class="form-group">
+                        <label for="gold">Золото</label>
+                        <input type="number" class="form-control" id="gold" name="gold" value="0">
                     </div>
-                </div>
+                    <div class="form-group">
+                        <label for="achievement">Ачивка</label>
+                        <select class="form-control" id="achievement" name="achievement">
+                            <option value="">Выберите ачивку</option>
+                            {% for achievement in achievements %}
+                                <option value="{{ achievement.id }}">{{ achievement.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                <button type="submit" class="btn btn-success" form="rewardForm">Наградить</button>
             </div>
         </div>
-    {% endfor %}
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Обработчик для checkbox'а "Выделить все"
+        $('#selectAll').on('change', function() {
+            $('.student-checkbox').prop('checked', $(this).prop('checked'));
+            updateRewardButton();
+        });
+    
+        // Обновление состояния checkbox'а "Выделить все" и кнопки "Наградить выбранных" при изменении отдельных checkbox'ов
+        $('.student-checkbox').on('change', function() {
+            var allChecked = $('.student-checkbox:checked').length === $('.student-checkbox').length;
+            $('#selectAll').prop('checked', allChecked);
+            updateRewardButton();
+        });
+    
+        // Функция для обновления состояния кнопки "Наградить выбранных"
+        function updateRewardButton() {
+            var selectedCount = $('.student-checkbox:checked').length;
+            $('#rewardSelectedBtn').prop('disabled', selectedCount === 0);
+        }
+    
+        // Обработчик для кнопки "Наградить выбранных"
+        $('#rewardSelectedBtn').on('click', function() {
+        var selectedCount = $('.student-checkbox:checked').length;
+        if (selectedCount > 0) {
+            showNotification('info', 'Выбрано учеников: ' + selectedCount);
+            $('#rewardModal').modal('show');
+        } else {
+            showNotification('warning', 'Пожалуйста, выберите хотя бы одного ученика');
+            }
+        });
+    
+        // Обработчик отправки формы награждения
+        $('#rewardForm').on('submit', function(e) {
+            e.preventDefault();
+            rewardStudents();
+        });
+    
+        // Обработчик отправки формы награждения
+    $('#rewardForm').on('submit', function(e) {
+        e.preventDefault();
+        rewardStudents();
+    });
+
+    // Обработчик клика на кнопку "Наградить" в модальном окне
+    $('#rewardModal .btn-success').on('click', function(e) {
+        e.preventDefault();
+        rewardStudents();
+    });
+
+    // Обработчик клика на кнопку "Отмена" в модальном окне
+    $('#rewardModal .btn-secondary').on('click', function() {
+        $('#rewardModal').modal('hide');
+    });
+
+function rewardStudents() {
+    var selectedStudents = [];
+    $('.student-checkbox:checked').each(function() {
+        selectedStudents.push($(this).val());
+    });
+
+    var formData = {
+        students: selectedStudents,
+        item: $('#item').val(),
+        experience: $('#experience').val(),
+        gold: $('#gold').val(),
+        achievement: $('#achievement').val()
+    };
+
+    $.ajax({
+        url: "{{ url_for('student.reward_students') }}",
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(formData),
+        success: function(response) {
+            if (response.status === 'success') {
+                showNotification('success', 'Ученики успешно награждены!');
+                $('#rewardModal').modal('hide');
+                setTimeout(function() {
+                    location.reload();
+                }, 1500);
+            } else {
+                showNotification('error', 'Произошла ошибка при награждении учеников: ' + response.message);
+            }
+        },
+        error: function(xhr, status, error) {
+            showNotification('error', 'Произошла ошибка при отправке запроса: ' + error);
+        }
+    });
+}
+
+function showNotification(type, message) {
+            var icon, color;
+            switch(type) {
+                case 'success':
+                    icon = '✅';
+                    color = '#28a745';
+                    break;
+                case 'error':
+                    icon = '❌';
+                    color = '#dc3545';
+                    break;
+                case 'info':
+                    icon = 'ℹ️';
+                    color = '#17a2b8';
+                    break;
+                case 'warning':
+                    icon = '⚠️';
+                    color = '#ffc107';
+                    break;
+            }
+            
+            var notificationElement = $('<div>')
+                .addClass('notification')
+                .css({
+                    'position': 'fixed',
+                    'top': '20px',
+                    'right': '20px',
+                    'padding': '15px',
+                    'border-radius': '4px',
+                    'color': 'white',
+                    'background-color': color,
+                    'box-shadow': '0 4px 8px rgba(0,0,0,0.1)',
+                    'z-index': '1000',
+                    'opacity': '0',
+                    'transition': 'opacity 0.3s ease-in-out'
+                })
+                .html(icon + ' ' + message);
+
+            $('body').append(notificationElement);
+            setTimeout(function() {
+                notificationElement.css('opacity', '1');
+            }, 100);
+            setTimeout(function() {
+                notificationElement.css('opacity', '0');
+                setTimeout(function() {
+                    notificationElement.remove();
+                }, 300);
+            }, 3000);
+        }
+    });
+</script>
 {% endblock %}

@@ -25,7 +25,7 @@ class Discipline(db.Model):
     description = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    faction_id = db.Column(db.Integer, db.ForeignKey('factions.id', name='fk_discipline_faction', ondelete='SET NULL'), nullable=True)
+    faction_id = db.Column(db.Integer, db.ForeignKey('factions.id'))
     
     teachers = db.relationship('User', secondary='teacher_disciplines', back_populates='disciplines')
     users = db.relationship('User', secondary='user_disciplines', back_populates='disciplines')

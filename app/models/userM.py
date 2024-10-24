@@ -112,7 +112,7 @@ class User(UserMixin, db.Model):
     pedstage = db.Column(db.String(100), nullable=True)  # Педагогический стаж учителя
     achievements = db.relationship('Achievement', secondary='user_achievements', back_populates='users')
     comments = db.relationship('Comment', back_populates='author', lazy=True)
-    faction_id = db.Column(db.Integer, db.ForeignKey('factions.id', name='fk_user_faction', ondelete='SET NULL'), nullable=True)
+    faction_id = db.Column(db.Integer, db.ForeignKey('factions.id'), nullable=True)
     faction = db.relationship('Faction', foreign_keys=[faction_id], backref='members', lazy=True)
     factions = db.relationship('Faction', secondary=user_factions, back_populates='users')
     user_completed_events = db.relationship('Event', secondary='event_players_competed',

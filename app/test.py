@@ -12,7 +12,21 @@ from app.models.eventM import Event
 from app.models.projectsM import Project, File
 from datetime import datetime, timedelta
 from werkzeug.security import  generate_password_hash
+from sqlalchemy import text
 def populate_db():
+    with db.engine.connect() as conn:
+        result = conn.execute(text("SELECT column_name FROM information_schema.columns WHERE table_name='disciplines' AND column_name='faction_id'"))
+        if result.fetchone() is None:
+            # Если колонки нет, добавляем ее
+            conn.execute(text("ALTER TABLE disciplines ADD COLUMN faction_id INTEGER"))
+            conn.commit()
+            
+    faction = Faction.query.first()
+    if not faction:
+        faction = Faction(name="Default Faction")
+        db.session.add(faction)
+        db.session.commit()
+        
     # Создаем дисциплину
     discipline = Discipline.query.filter_by(name='Программирование').first()
     if not discipline:
@@ -22,13 +36,14 @@ def populate_db():
                 description='Описание дисциплины',  # Описание дисциплины
                 created_at=datetime.utcnow(),  # Дата создания дисциплины
                 updated_at=datetime.utcnow(),  # Дата обновления дисциплины
+                faction_id=faction.id
             )
             db.session.add(discipline)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
             print(f"Ошибка добавления дисциплины: {e}")
-
+            
     discipline = Discipline.query.filter_by(name='VR/AR').first()
     if not discipline:
         try:
@@ -36,7 +51,8 @@ def populate_db():
                 name='VR/AR',  # Название дисциплины
                 description='Описание дисциплины',  # Описание дисциплины
                 created_at=datetime.utcnow(),  # Дата создания дисциплины
-                updated_at=datetime.utcnow()  # Дата обновления дисциплины
+                updated_at=datetime.utcnow(),  # Дата обновления дисциплины
+                faction_id=faction.id
             )
             db.session.add(discipline)
             db.session.commit()

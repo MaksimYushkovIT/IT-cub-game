@@ -26,10 +26,8 @@ import app.models.special_items as spec
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(Config)
-
     login_manager = LoginManager()
     login_manager.init_app(app)
-    # Регистрация blueprints
     app.register_blueprint(other)
     app.register_blueprint(achievements)
     app.register_blueprint(admin)
@@ -42,7 +40,6 @@ def create_app(config_class=Config):
     app.register_blueprint(quests)
     app.register_blueprint(disciplines_blueprint)
     app.register_blueprint(faction_blueprint)
-    # Инициализация расширений
     print(f"SQLALCHEMY_DATABASE_URI in app config: {app.config['SQLALCHEMY_DATABASE_URI']}")
     db.init_app(app)
     migrate.init_app(app, db)
